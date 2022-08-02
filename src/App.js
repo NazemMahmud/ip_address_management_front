@@ -1,13 +1,14 @@
 import React from "react";
-import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Authentication/Login";
 import Registration from "./pages/Authentication/Registration";
 import Dashboard from "./pages/Dashboard";
 import PageNotFound from "./pages/PageNotFound";
 
-function App() {
-    console.log('here');
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const App = () => {
   return (
     <div className="App">
         <BrowserRouter>
@@ -21,6 +22,6 @@ function App() {
         </BrowserRouter>
     </div>
   );
-}
+};
 
 export default App;

@@ -2,6 +2,7 @@
   "extends": [ "react-app", "react-app/jest" ],
   "rules": {
     "no-console": "warn",
-    "semi": [2, "always"]
+    "semi": [2, "always"],
+    "object-curly-spacing": ["error", "always"]
   }
 }
