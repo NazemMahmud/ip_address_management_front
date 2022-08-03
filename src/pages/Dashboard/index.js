@@ -92,7 +92,7 @@ const Dashboard = () => {
      * Update pagination info
      * @param data
      */
-    const ipFormCallback = data => {
+    const ipAddCallback = data => {
         if (params.page == 1) {
             const newDataList = [...dataList];
             newDataList.unshift(data);
@@ -108,6 +108,17 @@ const Dashboard = () => {
                 page: 1,
             });
         }
+    };
+
+    /**
+     * After update ip address, update in the data table
+     * @param updatedData
+     */
+    const ipUpdateCallback = updatedData => {
+        const newDataList = [...dataList];
+        const findIndex = dataList.findIndex(item => item.id == updatedData.id);
+        newDataList[findIndex] = updatedData;
+        setDataList([...newDataList]);
     };
 
     /**
@@ -134,7 +145,8 @@ const Dashboard = () => {
                     <Card >
                         <Card.Body>
                             <AddUpdateForm updateData={oldIPData}
-                                ipFormCallback={ipFormCallback} />
+                                           ipAddCallback={ipAddCallback}
+                                           ipUpdateCallback={ipUpdateCallback} />
                         </Card.Body>
                     </Card>
                 </Col>

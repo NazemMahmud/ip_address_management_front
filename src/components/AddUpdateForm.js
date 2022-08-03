@@ -3,7 +3,7 @@ import { Button, Form, InputGroup } from "react-bootstrap";
 import { storeIp, updateIp } from "../services/ip.service";
 import { checkDisableButton } from "../utility/utils";
 
-const AddUpdateForm = ({ updateData, ipFormCallback }) => {
+const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
     const [isDisabled, setIsDisabled] = useState(true);
     // ip address add / update form
     const [formInput, setFormInput] = useReducer(
@@ -91,8 +91,8 @@ const AddUpdateForm = ({ updateData, ipFormCallback }) => {
         await storeIp(formData)
             .then(response => {
                 // TODO: add toaster
+                ipAddCallback(response.data.data);
                 resetForm();
-                ipFormCallback(response.data.data);
             })
             .catch(error => {
                 console.log(error);
@@ -108,11 +108,17 @@ const AddUpdateForm = ({ updateData, ipFormCallback }) => {
             formData[item] = formInput[item].value;
         }
         // LATER: add a loader
-        await updateIp(formData)
+        await updateIp(formData, updateData.id)
             .then(response => {
-                // TODO: add toaster
+                // TODO: add toaster: response.data.data.message
+                updateData = {
+                    ...updateData,
+                    ip: formData.ip,
+                    label: formData.label,
+                };
+
+                ipUpdateCallback(updateData);
                 resetForm();
-                ipFormCallback(response.data.data);
             })
             .catch(error => {
                 console.log(error);
