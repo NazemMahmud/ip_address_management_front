@@ -13,7 +13,6 @@ const Registration = () => {
         (state, newState) => ({ ...state, ...newState }),
         {
             email: {
-                name: 'email',
                 value: '',
                 pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
                 isValid: false,
@@ -22,7 +21,6 @@ const Registration = () => {
                 label: 'Email Address'
             },
             password: {
-                name: 'password',
                 value: '',
                 helperText: '',
                 isValid: false,
@@ -31,7 +29,6 @@ const Registration = () => {
                 minLength: 6
             },
             confirmPassword: {
-                name: 'confirm-password',
                 value: '',
                 isValid: false,
                 helperText: '',
@@ -167,11 +164,6 @@ const Registration = () => {
                                 }
                             </InputGroup>
                         </Form.Group>
-
-                        {/*<Form.Group className="mb-3" controlId="formConfirmPassword">*/}
-                        {/*    <Form.Label>Confirm Password *</Form.Label>*/}
-                        {/*    <Form.Control  placeholder="Confirm Password"/>*/}
-                        {/*</Form.Group>*/}
 
                         <Link to="/login"> Already have an new account ? Sign In</Link>
                         <Button variant="primary" type="submit"
