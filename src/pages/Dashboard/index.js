@@ -16,7 +16,7 @@ const Dashboard = () => {
     const initialParams = {
         orderBy: queryParams.get("orderBy") ?? 'DESC',
         sortBy: queryParams.get("sortBy") ?? 'id',
-        pageOffset: queryParams.get("pageOffset") ?? 2,
+        pageOffset: queryParams.get("pageOffset") ?? 4,
         page: queryParams.get("page") ?? 1
     };
 
@@ -85,13 +85,37 @@ const Dashboard = () => {
         });
     };
 
+    /**
+     * After add new ip address, update data table
+     * Show the new data at top
+     * Update pagination info
+     * @param data
+     */
+    const ipFormCallback = data => {
+        if (params.page == 1) {
+            const newDataList = [...dataList];
+            newDataList.unshift(data);
+            setDataList(newDataList);
+            setPaginationInfo({
+                ...paginationInfo,
+                to: paginationInfo.to + 1,
+                total: paginationInfo.total + 1,
+            });
+        } else {
+            setParams({
+                ...params,
+                page: 1,
+            });
+        }
+    };
+
     return (
         <DashboardLayout>
             <Row className="mb-5">
                 <Col>
                     <Card >
                         <Card.Body>
-                            <AddUpdateForm />
+                            <AddUpdateForm ipFormCallback={ipFormCallback} />
                         </Card.Body>
                     </Card>
                 </Col>

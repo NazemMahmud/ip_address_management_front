@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { storeIp } from "../services/ip.service";
 import { checkDisableButton } from "../utility/utils";
 
-const AddUpdateForm = () => {
+const AddUpdateForm = ({ ipFormCallback }) => {
     const [isDisabled, setIsDisabled] = useState(true);
     // ip address add / update form
     const [formInput, setFormInput] = useReducer(
@@ -66,7 +66,8 @@ const AddUpdateForm = () => {
         for (let item in formData) {
             formData[item].value = '';
         }
-        setFormInput({ ...formData });
+        console.log('reset: ', formData);
+        setFormInput({ ...formInput, ...formData });
     };
 
 
@@ -84,6 +85,7 @@ const AddUpdateForm = () => {
                 console.log('formData: ', formData);
                 // TODO: add toaster
                 resetForm();
+                ipFormCallback(response.data.data);
             })
             .catch(error => {
                 console.log(error);
@@ -98,7 +100,7 @@ const AddUpdateForm = () => {
                 <InputGroup hasValidation>
                     <Form.Control type="text" placeholder="Ex: 127.0.0.1"
                                   isInvalid={formInput.ip.touched && !formInput.ip.isValid}
-                                  name={formInput.ip.name} defaultValue={formInput.ip.value}
+                                  name={formInput.ip.name} value={formInput.ip.value}
                                   onChange={event => handleInput(event, inputKeys[0])}/>
                     {
                         formInput.ip.touched && !formInput.ip.isValid ?
@@ -114,7 +116,7 @@ const AddUpdateForm = () => {
                 <InputGroup hasValidation>
                     <Form.Control type="text" placeholder="Ex: BC2 server"
                                   isInvalid={formInput.label.touched && !formInput.label.isValid}
-                                  name={formInput.label.name} defaultValue={formInput.label.value}
+                                  name={formInput.label.name} value={formInput.label.value}
                                   onChange={event => handleInput(event, inputKeys[1])} />
                     {
                         formInput.label.touched && !formInput.label.isValid  ?
