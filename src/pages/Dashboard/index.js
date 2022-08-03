@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../layout/DashboardLayout";
-import { Button, Card, Form, Row, Col } from "react-bootstrap";
+import { Card, Row, Col } from "react-bootstrap";
 import Datatable from "../../components/Datatable";
 import { getAllIp } from "../../services/ip.service";
 import PaginationComponent from "../../components/PaginationComponent";
 import { setHttpParams } from "../../utility/utils";
 import { useLocation, useNavigate } from "react-router-dom";
+import AddUpdateForm from "../../components/AddUpdateForm";
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -90,24 +91,7 @@ const Dashboard = () => {
                 <Col>
                     <Card >
                         <Card.Body>
-                            <Form className="text-left">
-                                <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Label> IP address </Form.Label>
-                                    <Form.Control type="text" placeholder="Ex: 172.0.0.1" required />
-                                    <Form.Text className="text-muted">
-                                        Validation error message
-                                    </Form.Text>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3" controlId="formBasicPassword">
-                                    <Form.Label> Label/Comment</Form.Label>
-                                    <Form.Control type="text" placeholder="Ex: BC2 server" required />
-                                </Form.Group>
-
-                                <Button variant="primary" type="submit" className="float-right">
-                                    Submit
-                                </Button>
-                            </Form>
+                            <AddUpdateForm />
                         </Card.Body>
                     </Card>
                 </Col>
