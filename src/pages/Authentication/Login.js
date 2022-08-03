@@ -1,8 +1,8 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { Card, Button, Form, InputGroup } from 'react-bootstrap';
-import AuthLayout from "../../../layout/AuthLayout";
+import AuthLayout from "../../layout/AuthLayout";
 import { Link } from "react-router-dom";
-import { checkDisableButton } from "../../../utility/utils";
+import { checkDisableButton } from "../../utility/utils";
 
 
 const Login = () => {
@@ -106,10 +106,10 @@ const Login = () => {
                             </InputGroup>
                         </Form.Group>
 
-                        <Link to="/login"> Already have an new account ? Sign In</Link>
+                        <Link to="/register"> Don't have any account ? Sign Up</Link>
                         <Button variant="primary" type="submit"
                                 disabled={isDisabled} className="float-right">
-                            Sign up
+                            Sign in
                         </Button>
                     </Form>
                 </Card.Body>

@@ -1,18 +1,30 @@
 import React, { useReducer, useState, useEffect } from 'react';
 import { Button, Card, Form, InputGroup } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../layout/AuthLayout";
 import { checkDisableButton } from "../../utility/utils";
+import { registration } from "../../services/auth.service";
 
 
 const Registration = () => {
+    const navigate = useNavigate();
+
     // for button
     const [isDisabled, setIsDisabled] = useState(true);
     /** ******************* form based action *******************************/
     const [formInput, setFormInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         {
+            name: {
+                key: "name",
+                value: "",
+                isValid: false,
+                touched: false,
+                helperText: '',
+                label: 'Name'
+            },
             email: {
+                key: "email",
                 value: '',
                 pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
                 isValid: false,
@@ -21,6 +33,7 @@ const Registration = () => {
                 label: 'Email Address'
             },
             password: {
+                key: "password",
                 value: '',
                 helperText: '',
                 isValid: false,
@@ -29,6 +42,7 @@ const Registration = () => {
                 minLength: 6
             },
             confirmPassword: {
+                key: "password_confirmation",
                 value: '',
                 isValid: false,
                 helperText: '',
@@ -41,7 +55,6 @@ const Registration = () => {
 
     // to enable/disable submit button
     useEffect(() => {
-        console.log('In: ', formInput);
         setIsDisabled(checkDisableButton(formInput));
     }, [formInput]);
 
@@ -56,7 +69,6 @@ const Registration = () => {
             input.isValid = false;
             input.helperText = "Password doesn't match";
         } else if (input.touched && input.value === password) {
-            const input = formInput.confirmPassword;
             input.isValid = true;
             input.helperText = '';
         }
@@ -69,6 +81,10 @@ const Registration = () => {
 
     const formValidation = (input, inputIdentifier) => {
         switch (inputIdentifier) {
+            case 'name':
+                input.isValid = input.value.length;
+                input.helperText = !input.isValid ? 'Name is required' : '';
+                break;
             case 'email':
                 input.isValid = !!(formInput.email.value.match(formInput.email.pattern));
                 input.helperText = !input.isValid ? 'Invalid email address' : '';
@@ -100,10 +116,30 @@ const Registration = () => {
         formValidation(input, inputIdentifier);
     };
 
+    /** ****** Form Submission section  *******/
+    // format data before submit
+    const formatSubmitData = () => {
+        const data = {};
+        for (let item in formInput) {
+            data[formInput[item].key] = formInput[item].value;
+        }
+
+        return data;
+    };
+
     // sign up action
     const signUp = async event => {
         event.preventDefault();
-        // TODO
+
+        await registration(formatSubmitData())
+            .then(response => {
+                navigate("/login");
+            })
+            .catch(error => {
+                // TODO: add a toaster
+                console.log('error..', error);
+            });
+
         // TODO: add a loader
     };
 
@@ -112,13 +148,30 @@ const Registration = () => {
             <Card className="w-50">
                 <Card.Body>
                     <Form className="text-left">
+                        <Form.Group className="mb-3" controlId="formName">
+                            <Form.Label> { formInput.name.label } <span style={{ color: 'red' }}> * </span></Form.Label>
+                            <InputGroup hasValidation>
+                                <Form.Control type="name" placeholder="Enter Name"
+                                              isInvalid={formInput.name.touched && !formInput.name.isValid}
+                                              name={formInput.name.name} defaultValue={formInput.name.value}
+                                              onChange={event => handleInput(event, inputKeys[0])}
+                                />
+                                {
+                                    formInput.name.touched && !formInput.name.isValid ?
+                                        <Form.Control.Feedback type="invalid">
+                                            {formInput.name.helperText}
+                                        </Form.Control.Feedback> : <></>
+                                }
+                            </InputGroup>
+                        </Form.Group>
+
                         <Form.Group className="mb-3" controlId="formEmail">
                             <Form.Label> { formInput.email.label } <span style={{ color: 'red' }}> * </span></Form.Label>
                             <InputGroup hasValidation>
                                 <Form.Control type="email" placeholder="Enter Email"
                                               isInvalid={formInput.email.touched && !formInput.email.isValid}
                                               name={formInput.email.name} defaultValue={formInput.email.value}
-                                              onChange={event => handleInput(event, inputKeys[0])}
+                                              onChange={event => handleInput(event, inputKeys[1])}
                                 />
                                 {
                                     formInput.email.touched && !formInput.email.isValid ?
@@ -135,7 +188,7 @@ const Registration = () => {
                                     <Form.Control type="password" placeholder="Password"
                                                   isInvalid={formInput.password.touched && !formInput.password.isValid}
                                                   name={formInput.password.name} defaultValue={formInput.password.value}
-                                                  onChange={event => handleInput(event, inputKeys[1])}
+                                                  onChange={event => handleInput(event, inputKeys[2])}
                                     />
 
                                     {
@@ -153,7 +206,7 @@ const Registration = () => {
                                 <Form.Control type="password" placeholder="Password"
                                               isInvalid={formInput.confirmPassword.touched && !formInput.confirmPassword.isValid}
                                               name={formInput.confirmPassword.name} defaultValue={formInput.confirmPassword.value}
-                                              onChange={event => handleInput(event, inputKeys[2])}
+                                              onChange={event => handleInput(event, inputKeys[3])}
                                 />
 
                                 {
@@ -166,8 +219,8 @@ const Registration = () => {
                         </Form.Group>
 
                         <Link to="/login"> Already have an new account ? Sign In</Link>
-                        <Button variant="primary" type="submit"
-                                disabled={isDisabled} className="float-right">
+                        <Button variant="primary" type="button" disabled={isDisabled}
+                                className="float-right"  onClick={signUp}>
                             Sign up
                         </Button>
                     </Form>
