@@ -1,6 +1,5 @@
 import React from "react";
-import {Container, Row, Col, Card, Form, Button} from 'react-bootstrap';
-import {Link} from "react-router-dom";
+import { Container, Row, Col, Card } from 'react-bootstrap';
 
 const PageNotFound = () => {
     return (
