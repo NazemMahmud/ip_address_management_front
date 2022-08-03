@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../layout/DashboardLayout";
 import { Card, Row, Col } from "react-bootstrap";
 import Datatable from "../../components/Datatable";
-import { getAllIp } from "../../services/ip.service";
+import { getAllIp, getSingleIp } from "../../services/ip.service";
 import PaginationComponent from "../../components/PaginationComponent";
 import { setHttpParams } from "../../utility/utils";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -22,6 +22,7 @@ const Dashboard = () => {
 
     const [params, setParams] = useState(initialParams);
     const [dataList, setDataList] = useState([]);
+    const [oldIPData, setOldIPData] = useState({});
 
     // this info will come from API if it is paginated
     const [paginationInfo, setPaginationInfo] = useState({
@@ -109,13 +110,31 @@ const Dashboard = () => {
         }
     };
 
+    /**
+     * Call API & populate update form
+     */
+    const handleEditCallback = async id => {
+            await getSingleIp(id)
+                .then(res => {
+                    const response = res.data;
+                    console.log(response);
+                    setOldIPData({ ...response.data });
+                })
+                .catch(error => {
+                    // TODO: add a toaster
+                    console.log('error..', error);
+                });
+            // TODO: add a loader
+    };
+
     return (
         <DashboardLayout>
             <Row className="mb-5">
                 <Col>
                     <Card >
                         <Card.Body>
-                            <AddUpdateForm ipFormCallback={ipFormCallback} />
+                            <AddUpdateForm updateData={oldIPData}
+                                ipFormCallback={ipFormCallback} />
                         </Card.Body>
                     </Card>
                 </Col>
@@ -123,7 +142,7 @@ const Dashboard = () => {
 
             <Row>
                 <Col>
-                    <Datatable data={dataList}/>
+                    <Datatable data={dataList} handleEditCallback={handleEditCallback}/>
                 </Col>
             </Row>
             {

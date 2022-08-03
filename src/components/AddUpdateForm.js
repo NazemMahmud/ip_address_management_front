@@ -1,10 +1,9 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { Button, Form, InputGroup } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { storeIp } from "../services/ip.service";
+import { storeIp, updateIp } from "../services/ip.service";
 import { checkDisableButton } from "../utility/utils";
 
-const AddUpdateForm = ({ ipFormCallback }) => {
+const AddUpdateForm = ({ updateData, ipFormCallback }) => {
     const [isDisabled, setIsDisabled] = useState(true);
     // ip address add / update form
     const [formInput, setFormInput] = useReducer(
@@ -26,6 +25,17 @@ const AddUpdateForm = ({ ipFormCallback }) => {
         }
     );
     const inputKeys = Object.keys(formInput);
+
+    useEffect(() => {
+        if (updateData.id) {
+            const formData = { ...formInput };
+            formData.ip.value = updateData.ip;
+            formData.ip.isValid = true;
+            formData.label.value = updateData.label;
+            formData.label.isValid = true;
+            setFormInput(formData);
+        }
+    }, [updateData]);
 
     const formValidation = (input, inputIdentifier) => {
         switch (inputIdentifier) {
@@ -66,7 +76,6 @@ const AddUpdateForm = ({ ipFormCallback }) => {
         for (let item in formData) {
             formData[item].value = '';
         }
-        console.log('reset: ', formData);
         setFormInput({ ...formInput, ...formData });
     };
 
@@ -81,8 +90,26 @@ const AddUpdateForm = ({ ipFormCallback }) => {
         // LATER: add a loader
         await storeIp(formData)
             .then(response => {
-                console.log('response: ', response);
-                console.log('formData: ', formData);
+                // TODO: add toaster
+                resetForm();
+                ipFormCallback(response.data.data);
+            })
+            .catch(error => {
+                console.log(error);
+                // TODO: add toaster
+            });
+    };
+
+    // update API call
+    const update = async event => {
+        event.preventDefault();
+        const formData = {};
+        for (let item in formInput) {
+            formData[item] = formInput[item].value;
+        }
+        // LATER: add a loader
+        await updateIp(formData)
+            .then(response => {
                 // TODO: add toaster
                 resetForm();
                 ipFormCallback(response.data.data);
@@ -94,7 +121,7 @@ const AddUpdateForm = ({ ipFormCallback }) => {
     };
 
     return (
-        <Form className="text-left" onSubmit={create}>
+        <Form className="text-left" onSubmit={updateData.id ? update : create}>
             <Form.Group className="mb-3" controlId="formIP">
                 <Form.Label> IP address <span style={{ color: 'red' }}> * </span> </Form.Label>
                 <InputGroup hasValidation>
@@ -129,7 +156,7 @@ const AddUpdateForm = ({ ipFormCallback }) => {
 
             <Button variant="primary" type="submit" className="float-right"
                     disabled={isDisabled} >
-                Submit
+                { updateData.id ? 'Update' : 'Submit' }
             </Button>
 
         </Form>

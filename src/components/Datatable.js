@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Card, Table } from "react-bootstrap";
 
-const Datatable = ({ data }) => {
+const Datatable = ({ data, handleEditCallback }) => {
     return (
         <Card>
             <Card.Body className="m-0 p-0">
@@ -21,7 +21,8 @@ const Datatable = ({ data }) => {
                                     <td> {info.ip} </td>
                                     <td> {info.label} </td>
                                     <td>
-                                        <Button variant="warning" type="button">
+                                        <Button size="sm" variant="warning" type="button"
+                                                onClick={() => handleEditCallback(info.id)}>
                                             Update
                                         </Button>
                                     </td>
