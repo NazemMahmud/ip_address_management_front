@@ -39,14 +39,16 @@ authInstance.interceptors.request.use(
 authInstance.interceptors.response.use(response => {
     return response;
 }, async error => {
+    console.log('error config: ', error.config);
     const originalRequest = error?.config;
     if (error?.response?.status === 401 && !originalRequest?._retry) {
         originalRequest._retry = true;
 
         const access_token = error.response.data.data.refresh_token;
+
         originalRequest.headers.Authorization = 'Bearer ' + access_token;
         store.dispatch(handleLogin({ access_token }));
-
+        console.log('originalRequest: ', originalRequest);
         return authInstance(originalRequest);
     }
     // in case token invalid/mismatch but not expired
@@ -54,7 +56,7 @@ authInstance.interceptors.response.use(response => {
     setTimeout(() => {
         window.location.href = "/login";
     }, 1000);
-    await Promise.reject(error);
+    return Promise.reject(error);
 });
 
 

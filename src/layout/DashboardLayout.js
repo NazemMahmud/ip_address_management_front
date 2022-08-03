@@ -11,6 +11,7 @@ const DashboardLayout = props => {
 
     // redirect if not logged in
     useEffect(() => {
+        console.log('sadsad: ', accessToken);
         if (!accessToken) {
             navigate("/login");
         }

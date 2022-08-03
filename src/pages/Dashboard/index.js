@@ -1,71 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../layout/DashboardLayout";
-import { Button, Card, Form, Row, Col, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Button, Card, Form, Row, Col } from "react-bootstrap";
+import Datatable from "../../components/Datatable";
+import { getAllIp } from "../../services/ip.service";
+// import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-    const data = [
-        {
-            id: 1,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 2,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 3,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 4,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 5,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 6,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 7,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 8,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 9,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 10,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 11,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        },
-        {
-            id: 12,
-            ip: '127.0.0.1',
-            label: 'localhost'
-        }
-    ];
+    const initialParams = {
+        orderBy: 'DESC',
+        sortBy: 'id',
+        pageOffset: 10,
+        page: 1
+    };
+
+    const [params, setParams] = useState(initialParams);
+    const [dataList, setDataList] = useState([]);
+
+    /** Get all/paginated ip address data for table **/
+    useEffect( () => {
+        getDataList();
+    }, []);
+
+    const getDataList = async () => {
+        await getAllIp(params)
+            .then(res => {
+                const response = res.data.data;
+                // TODO: set pagination info
+                setDataList(response);
+            })
+            .catch(error => {
+                // TODO: add a toaster
+                console.log('error..', error);
+            });
+        // TODO: add a loader
+    };
+
     return (
         <DashboardLayout>
             <Row className="mb-5">
@@ -97,34 +66,7 @@ const Dashboard = () => {
 
             <Row>
                 <Col>
-                    <Card>
-                        <Card.Body className="m-0 p-0">
-                            <Table striped bordered hover size="sm" className="mb-0 pb-0" >
-                                <thead>
-                                    <tr>
-                                        <th>IP Address</th>
-                                        <th>Label</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        data.map(info =>
-                                            <tr>
-                                                <td> {info.ip} </td>
-                                                <td> {info.label} </td>
-                                                <td>
-                                                    <Button variant="warning" type="button">
-                                                        Update
-                                                    </Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    }
-                                </tbody>
-                            </Table>
-                        </Card.Body>
-                    </Card>
+                    <Datatable data={dataList}/>
                 </Col>
             </Row>
 

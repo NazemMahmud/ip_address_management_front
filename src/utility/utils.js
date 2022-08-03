@@ -21,7 +21,12 @@ export const checkDisableButton = formInput => {
     return false;
 };
 
-// format data before submit
+//
+/**
+ * format data before submit (login + registration)
+ * @param formInput
+ * @returns {{}}
+ */
 export const formatSubmitData = formInput => {
     const data = {};
     for (let item in formInput) {
@@ -29,4 +34,27 @@ export const formatSubmitData = formInput => {
     }
 
     return data;
+};
+
+
+/**
+ * format HTTP query params before send with API
+ * @param params
+ * @returns {string}
+ */
+export const setHttpParams = (params) => {
+    // delete key, if key has no value or value = null
+    Object.keys(params).forEach(
+        (key) =>
+            (params[key] == null || params[key] == "") && delete params[key]
+    );
+
+    let length = Object.keys(params).length;
+    let param = "";
+    for (const [key, value] of Object.entries(params)) {
+        param = param + `${key}=${value}`;
+        length = length - 1;
+        param = length ? param + "&" : param;
+    }
+    return param;
 };

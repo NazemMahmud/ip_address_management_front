@@ -142,7 +142,7 @@ const Login = () => {
                         </Form.Group>
 
                         <Link to="/register"> Don't have any account ? Sign Up</Link>
-                        <Button variant="primary" type="button" onClick={signIn}
+                        <Button variant="primary" type="submit" onClick={signIn}
                                 disabled={isDisabled} className="float-right">
                             Sign in
                         </Button>
