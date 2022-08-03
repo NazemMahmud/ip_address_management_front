@@ -6,17 +6,17 @@ import { getAllIp } from "../../services/ip.service";
 import PaginationComponent from "../../components/PaginationComponent";
 import { setHttpParams } from "../../utility/utils";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { Link } from "react-router-dom";
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
 
     const initialParams = {
-        orderBy: 'DESC',
-        sortBy: 'id',
-        pageOffset: 2,
-        page: 1
+        orderBy: queryParams.get("orderBy") ?? 'DESC',
+        sortBy: queryParams.get("sortBy") ?? 'id',
+        pageOffset: queryParams.get("pageOffset") ?? 2,
+        page: queryParams.get("page") ?? 1
     };
 
     const [params, setParams] = useState(initialParams);
