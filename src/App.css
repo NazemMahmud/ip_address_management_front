@@ -9,6 +9,7 @@
 
 button:disabled {
   cursor: not-allowed;
+  background-color: #767676 !important;
 }
 @keyframes App-logo-spin {
   from {

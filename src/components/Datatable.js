@@ -16,8 +16,8 @@ const Datatable = ({ data }) => {
                     <tbody>
                     {
                         data.length ?
-                            data.map(info =>
-                                <tr>
+                            data.map((info, idx) =>
+                                <tr key={idx}>
                                     <td> {info.ip} </td>
                                     <td> {info.label} </td>
                                     <td>
