@@ -2,7 +2,7 @@ import React, { useReducer, useState, useEffect } from 'react';
 import { Button, Card, Form, InputGroup } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../layout/AuthLayout";
-import { checkDisableButton } from "../../utility/utils";
+import { checkDisableButton, formatSubmitData } from "../../utility/utils";
 import { registration } from "../../services/auth.service";
 
 
@@ -117,21 +117,12 @@ const Registration = () => {
     };
 
     /** ****** Form Submission section  *******/
-    // format data before submit
-    const formatSubmitData = () => {
-        const data = {};
-        for (let item in formInput) {
-            data[formInput[item].key] = formInput[item].value;
-        }
-
-        return data;
-    };
 
     // sign up action
     const signUp = async event => {
         event.preventDefault();
 
-        await registration(formatSubmitData())
+        await registration(formatSubmitData(formInput))
             .then(response => {
                 navigate("/login");
             })
