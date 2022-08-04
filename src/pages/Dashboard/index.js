@@ -16,10 +16,11 @@ const Dashboard = () => {
     const initialParams = {
         orderBy: queryParams.get("orderBy") ?? 'DESC',
         sortBy: queryParams.get("sortBy") ?? 'id',
-        pageOffset: queryParams.get("pageOffset") ?? 4,
+        pageOffset: queryParams.get("pageOffset") ?? 10,
         page: queryParams.get("page") ?? 1
     };
 
+    const [isLoading, setIsLoading] = useState(true);
     const [params, setParams] = useState(initialParams);
     const [dataList, setDataList] = useState([]);
     const [oldIPData, setOldIPData] = useState({});
@@ -65,10 +66,11 @@ const Dashboard = () => {
                     perPage: response.meta.per_page,
                     lastPage: response.meta.last_page
                 });
-
+                setIsLoading(false);
                 changeUrl();
             })
             .catch(error => {
+                setIsLoading(false);
                 // TODO: add a toaster
                 console.log('error..', error);
             });
@@ -119,6 +121,7 @@ const Dashboard = () => {
         const findIndex = dataList.findIndex(item => item.id == updatedData.id);
         newDataList[findIndex] = updatedData;
         setDataList([...newDataList]);
+        setOldIPData({});
     };
 
     /**
@@ -154,12 +157,16 @@ const Dashboard = () => {
 
             <Row>
                 <Col>
-                    <Datatable data={dataList} handleEditCallback={handleEditCallback}/>
+                    {
+                        isLoading ? <></> : <Datatable data={dataList} handleEditCallback={handleEditCallback}/>
+                    }
                 </Col>
             </Row>
             {
-                dataList.length && <PaginationComponent paginationInfo={paginationInfo}
-                                                        paginationCallback={paginationCallback} />
+                !isLoading && dataList.length ?
+                    <PaginationComponent paginationInfo={paginationInfo}
+                                                        paginationCallback={paginationCallback}
+                    /> : <></>
             }
 
         </DashboardLayout>

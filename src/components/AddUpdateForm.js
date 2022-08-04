@@ -5,6 +5,7 @@ import { checkDisableButton } from "../utility/utils";
 
 const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
     const [isDisabled, setIsDisabled] = useState(true);
+
     // ip address add / update form
     const [formInput, setFormInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
@@ -75,6 +76,8 @@ const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
         const formData = { ...formInput };
         for (let item in formData) {
             formData[item].value = '';
+            formData[item].isValid = false;
+            formData[item].touched = false;
         }
         setFormInput({ ...formInput, ...formData });
     };
@@ -91,8 +94,9 @@ const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
         await storeIp(formData)
             .then(response => {
                 // TODO: add toaster
-                ipAddCallback(response.data.data);
                 resetForm();
+                ipAddCallback(response.data.data);
+
             })
             .catch(error => {
                 console.log(error);
@@ -116,9 +120,8 @@ const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
                     ip: formData.ip,
                     label: formData.label,
                 };
-
-                ipUpdateCallback(updateData);
                 resetForm();
+                ipUpdateCallback(updateData);
             })
             .catch(error => {
                 console.log(error);
