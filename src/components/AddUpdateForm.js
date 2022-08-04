@@ -7,7 +7,7 @@ import { checkDisableButton } from "../utility/utils";
 import 'react-toastify/dist/ReactToastify.css';
 import { DATA_CREATE_SUCCESS, DATA_CREATE_FAILED, DATA_UPDATE_FAILED } from "../config/constants";
 
-const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
+const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback, loaderCallback }) => {
     const [isDisabled, setIsDisabled] = useState(true);
 
     // ip address add / update form
@@ -95,15 +95,17 @@ const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
         for (let item in formInput) {
             formData[item] = formInput[item].value;
         }
-        // TODO: add a loader
+        // to start loader
+        loaderCallback(true);
         await storeIp(formData)
             .then(response => {
                 resetForm();
-                toast.success(<ToastComponent messages={DATA_CREATE_SUCCESS} />);
                 ipAddCallback(response.data.data);
+                toast.success(<ToastComponent messages={DATA_CREATE_SUCCESS} />);
             })
             .catch(error => {
                 const errorMessage = error?.response?.data?.error ?? DATA_CREATE_FAILED;
+                loaderCallback(false);
                 toast.error(<ToastComponent messages={errorMessage}/>);
             });
     };
@@ -115,7 +117,9 @@ const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
         for (let item in formInput) {
             formData[item] = formInput[item].value;
         }
-        // TODO: add a loader
+
+        // to start loader
+        loaderCallback(true);
         await updateIp(formData, updateData.id)
             .then(response => {
                 updateData = {
@@ -123,12 +127,13 @@ const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
                     ip: formData.ip,
                     label: formData.label,
                 };
+                ipUpdateCallback(updateData);
                 resetForm();
                 toast.success(<ToastComponent messages={response.data.data.message} />);
-                ipUpdateCallback(updateData);
             })
             .catch(error => {
                 const errorMessage = error?.response?.data?.error ?? DATA_UPDATE_FAILED;
+                loaderCallback(false);
                 toast.error(<ToastComponent messages={errorMessage}/>);
             });
     };

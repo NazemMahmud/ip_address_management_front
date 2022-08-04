@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
-import DashboardLayout from "../../layout/DashboardLayout";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Card, Row, Col } from "react-bootstrap";
+import DashboardLayout from "../../layout/DashboardLayout";
 import Datatable from "../../components/Datatable";
-import { getAllIp, getSingleIp } from "../../services/ip.service";
 import PaginationComponent from "../../components/PaginationComponent";
 import { setHttpParams } from "../../utility/utils";
-import { useLocation, useNavigate } from "react-router-dom";
+import { getAllIp, getSingleIp } from "../../services/ip.service";
 import AddUpdateForm from "../../components/AddUpdateForm";
+import { toast, ToastContainer } from "react-toastify";
+import ToastComponent from "../../components/ToastComponent";
+import { SOMETHING_WENT_WRONG } from "../../config/constants";
+import 'react-toastify/dist/ReactToastify.css';
+import LoaderComponent from "../../components/LoaderComponent";
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -21,6 +26,7 @@ const Dashboard = () => {
     };
 
     const [isLoading, setIsLoading] = useState(true);
+    const [isSetData, setIsSetData] = useState(false);
     const [params, setParams] = useState(initialParams);
     const [dataList, setDataList] = useState([]);
     const [oldIPData, setOldIPData] = useState({});
@@ -52,6 +58,7 @@ const Dashboard = () => {
     }, [params]);
 
     const getDataList = async () => {
+        setIsLoading(true);
         await getAllIp(params)
             .then(res => {
                 const response = res.data;
@@ -67,14 +74,14 @@ const Dashboard = () => {
                     lastPage: response.meta.last_page
                 });
                 setIsLoading(false);
+                setIsSetData(true);
                 changeUrl();
             })
             .catch(error => {
                 setIsLoading(false);
-                // TODO: add a toaster
-                console.log('error..', error);
+                const errorMessage = error?.response?.data?.error ?? SOMETHING_WENT_WRONG;
+                toast.error(<ToastComponent messages={errorMessage}/>);
             });
-        // TODO: add a loader
     };
 
     /**
@@ -104,6 +111,7 @@ const Dashboard = () => {
                 to: paginationInfo.to + 1,
                 total: paginationInfo.total + 1,
             });
+            setIsLoading(false);
         } else {
             setParams({
                 ...params,
@@ -122,34 +130,49 @@ const Dashboard = () => {
         newDataList[findIndex] = updatedData;
         setDataList([...newDataList]);
         setOldIPData({});
+        setIsLoading(false);
+    };
+
+    const loaderCallback = data => {
+        setIsLoading(data);
     };
 
     /**
      * Call API & populate update form
      */
     const handleEditCallback = async id => {
-            await getSingleIp(id)
-                .then(res => {
-                    const response = res.data;
-                    console.log(response);
-                    setOldIPData({ ...response.data });
-                })
-                .catch(error => {
-                    // TODO: add a toaster
-                    console.log('error..', error);
-                });
-            // TODO: add a loader
+        setIsLoading(true);
+        await getSingleIp(id)
+            .then(res => {
+                const response = res.data;
+                setOldIPData({ ...response.data });
+                setIsLoading(false);
+            })
+            .catch(error => {
+                const errorMessage = error?.response?.data?.error ?? SOMETHING_WENT_WRONG;
+                toast.error(<ToastComponent messages={errorMessage}/>);
+                setIsLoading(false);
+            });
     };
 
     return (
-        <DashboardLayout>
+        <DashboardLayout loaderCallback={loaderCallback}>
+            <ToastContainer position={"top-right"}
+                            autoClose={3000}
+                            hideProgressBar={false}
+                            closeOnClick
+                            pauseOnFocusLoss
+                            draggable/>
+            <LoaderComponent isLoading={isLoading} />
+
             <Row className="mb-5">
                 <Col>
                     <Card >
                         <Card.Body>
                             <AddUpdateForm updateData={oldIPData}
                                            ipAddCallback={ipAddCallback}
-                                           ipUpdateCallback={ipUpdateCallback} />
+                                           ipUpdateCallback={ipUpdateCallback}
+                                           loaderCallback={loaderCallback} />
                         </Card.Body>
                     </Card>
                 </Col>
@@ -158,12 +181,12 @@ const Dashboard = () => {
             <Row>
                 <Col>
                     {
-                        isLoading ? <></> : <Datatable data={dataList} handleEditCallback={handleEditCallback}/>
+                        isSetData ? <Datatable data={dataList} handleEditCallback={handleEditCallback}/> : <></>
                     }
                 </Col>
             </Row>
             {
-                !isLoading && dataList.length ?
+                dataList.length ?
                     <PaginationComponent paginationInfo={paginationInfo}
                                                         paginationCallback={paginationCallback}
                     /> : <></>

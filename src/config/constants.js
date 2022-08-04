@@ -1,3 +1,4 @@
+export const SOMETHING_WENT_WRONG = 'Something went wrong';
 export const REGISTRATION_ERROR_MESSAGE = 'Registration failed. Please try again';
 export const LOGIN_ERROR_MESSAGE = 'Invalid email or password. Please try again.';
 export const DATA_CREATE_SUCCESS = 'Data created successfully';

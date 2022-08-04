@@ -6,8 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkDisableButton, formatSubmitData } from "../../utility/utils";
 import { login } from "../../services/auth.service";
 import { handleLogin } from "../../redux/authentication";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import ToastComponent from "../../components/ToastComponent";
+import 'react-toastify/dist/ReactToastify.css';
 import { LOGIN_ERROR_MESSAGE } from "../../config/constants";
 
 
@@ -106,6 +107,12 @@ const Login = () => {
 
     return (
         <AuthLayout>
+            <ToastContainer position={"top-right"}
+                            autoClose={3000}
+                            hideProgressBar={false}
+                            closeOnClick
+                            pauseOnFocusLoss
+                            draggable/>
             <Card className="w-50">
                 <Card.Body>
                     <Form className="text-left">

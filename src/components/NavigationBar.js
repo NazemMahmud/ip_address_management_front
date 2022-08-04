@@ -3,26 +3,39 @@ import { useDispatch } from "react-redux";
 import { Container, Navbar, Form, Button } from 'react-bootstrap';
 import { logout } from "../services/auth.service";
 import { handleLogout } from "../redux/authentication";
+import { toast, ToastContainer } from "react-toastify";
+import ToastComponent from "./ToastComponent";
+import 'react-toastify/dist/ReactToastify.css';
+import { SOMETHING_WENT_WRONG } from "../config/constants";
 
-const NavigationBar = () => {
+const NavigationBar = ({ loaderCallback }) => {
 
     const dispatch = useDispatch();
 
     // log out action
     const signOut = async event => {
         event.preventDefault();
-        // TODO: add a loader
+        loaderCallback(true);
         await logout()
             .then(response => {
                 dispatch(handleLogout());
+                loaderCallback(false);
             })
             .catch(error => {
-                console.log('error..', error);
+                const errorMessage = error?.response?.data?.error ?? SOMETHING_WENT_WRONG;
+                toast.error(<ToastComponent messages={errorMessage}/>);
+                loaderCallback(false);
             });
     };
 
     return (
         <Navbar bg="dark" variant="dark">
+            <ToastContainer position={"top-right"}
+                            autoClose={3000}
+                            hideProgressBar={false}
+                            closeOnClick
+                            pauseOnFocusLoss
+                            draggable/>
             <Container>
                 <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />

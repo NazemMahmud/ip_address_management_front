@@ -17,9 +17,13 @@ const DashboardLayout = props => {
         }
     }, [accessToken, navigate]);
 
+    const handleLoaderCallback = data => {
+        props.loaderCallback(data);
+    };
+
     return (
         <div>
-            <NavigationBar />
+            <NavigationBar loaderCallback={handleLoaderCallback}/>
 
             <Container className="vh-100">
                 <Row className="mt-5">
