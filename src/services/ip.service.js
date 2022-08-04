@@ -1,7 +1,6 @@
 import { authInstance as axios } from "../utility/axios";
 import { setHttpParams } from "../utility/utils";
 
-
 /**
  *
  * @param params => optional { pageOffset | page | orderBy | sortBy }
@@ -12,17 +11,33 @@ export const getAllIp = async params => {
     return axios.get(`ip?${params}`);
 };
 
-/** TODO: Get single data */
+
+/**
+ * Get single data
+ * @param id
+ * @returns {Promise<AxiosResponse<any>>}
+ */
 export const getSingleIp = async id => {
     return axios.get(`ip/${id}`);
 };
 
-/** TODO: Store new IP address */
+
+/**
+ * Store new IP address
+ * @param data
+ * @returns {Promise<AxiosResponse<any>>}
+ */
 export const storeIp = async data => {
     return axios.post('ip', data);
 };
 
-/** TODO: Update an IP address */
+
+/**
+ * Update an IP address
+ * @param data
+ * @param id
+ * @returns {Promise<AxiosResponse<any>>}
+ */
 export const updateIp = async (data, id) => {
     return axios.patch(`ip/${id}`, data);
 };

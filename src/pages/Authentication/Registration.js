@@ -4,7 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../layout/AuthLayout";
 import { checkDisableButton, formatSubmitData } from "../../utility/utils";
 import { registration } from "../../services/auth.service";
-
+import { toast, ToastContainer } from "react-toastify";
+import ToastComponent from "../../components/ToastComponent";
+import 'react-toastify/dist/ReactToastify.css';
+import { REGISTRATION_ERROR_MESSAGE } from "../../config/constants";
 
 const Registration = () => {
     const navigate = useNavigate();
@@ -124,11 +127,14 @@ const Registration = () => {
 
         await registration(formatSubmitData(formInput))
             .then(response => {
-                navigate("/login");
+                toast.success(<ToastComponent messages={response.data.data.message} />);
+                setTimeout(() => {
+                    navigate("/login");
+                }, 2000);
             })
             .catch(error => {
-                // TODO: add a toaster
-                console.log('error..', error);
+                const errorMessage = error?.response?.data?.error ?? REGISTRATION_ERROR_MESSAGE;
+                toast.error(<ToastComponent messages={errorMessage}/>);
             });
 
         // TODO: add a loader
@@ -136,6 +142,12 @@ const Registration = () => {
 
     return (
         <AuthLayout>
+            <ToastContainer position={"top-right"}
+                            autoClose={3000}
+                            hideProgressBar={false}
+                            closeOnClick
+                            pauseOnFocusLoss
+                            draggable/>
             <Card className="w-50">
                 <Card.Body>
                     <Form className="text-left">

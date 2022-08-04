@@ -6,6 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkDisableButton, formatSubmitData } from "../../utility/utils";
 import { login } from "../../services/auth.service";
 import { handleLogin } from "../../redux/authentication";
+import { toast } from "react-toastify";
+import ToastComponent from "../../components/ToastComponent";
+import { LOGIN_ERROR_MESSAGE } from "../../config/constants";
 
 
 const Login = () => {
@@ -94,8 +97,8 @@ const Login = () => {
                     dispatch(handleLogin(response.data.data));
                 })
                 .catch(error => {
-                    // TODO: add a toaster
-                    console.log('error..', error);
+                    const errorMessage = error?.response?.data?.error ?? LOGIN_ERROR_MESSAGE;
+                    toast.error(<ToastComponent messages={errorMessage}/>);
                 });
             // TODO: add a loader
         };

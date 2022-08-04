@@ -1,7 +1,11 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { Button, Form, InputGroup } from "react-bootstrap";
+import { toast, ToastContainer } from "react-toastify";
+import ToastComponent from "./ToastComponent";
 import { storeIp, updateIp } from "../services/ip.service";
 import { checkDisableButton } from "../utility/utils";
+import 'react-toastify/dist/ReactToastify.css';
+import { DATA_CREATE_SUCCESS, DATA_CREATE_FAILED, DATA_UPDATE_FAILED } from "../config/constants";
 
 const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
     const [isDisabled, setIsDisabled] = useState(true);
@@ -27,6 +31,7 @@ const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
     );
     const inputKeys = Object.keys(formInput);
 
+    /** If there is a data to populate, then populate the form for update action  */
     useEffect(() => {
         if (updateData.id) {
             const formData = { ...formInput };
@@ -90,17 +95,16 @@ const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
         for (let item in formInput) {
             formData[item] = formInput[item].value;
         }
-        // LATER: add a loader
+        // TODO: add a loader
         await storeIp(formData)
             .then(response => {
-                // TODO: add toaster
                 resetForm();
+                toast.success(<ToastComponent messages={DATA_CREATE_SUCCESS} />);
                 ipAddCallback(response.data.data);
-
             })
             .catch(error => {
-                console.log(error);
-                // TODO: add toaster
+                const errorMessage = error?.response?.data?.error ?? DATA_CREATE_FAILED;
+                toast.error(<ToastComponent messages={errorMessage}/>);
             });
     };
 
@@ -111,64 +115,72 @@ const AddUpdateForm = ({ updateData, ipAddCallback, ipUpdateCallback }) => {
         for (let item in formInput) {
             formData[item] = formInput[item].value;
         }
-        // LATER: add a loader
+        // TODO: add a loader
         await updateIp(formData, updateData.id)
             .then(response => {
-                // TODO: add toaster: response.data.data.message
                 updateData = {
                     ...updateData,
                     ip: formData.ip,
                     label: formData.label,
                 };
                 resetForm();
+                toast.success(<ToastComponent messages={response.data.data.message} />);
                 ipUpdateCallback(updateData);
             })
             .catch(error => {
-                console.log(error);
-                // TODO: add toaster
+                const errorMessage = error?.response?.data?.error ?? DATA_UPDATE_FAILED;
+                toast.error(<ToastComponent messages={errorMessage}/>);
             });
     };
 
     return (
-        <Form className="text-left" onSubmit={updateData.id ? update : create}>
-            <Form.Group className="mb-3" controlId="formIP">
-                <Form.Label> IP address <span style={{ color: 'red' }}> * </span> </Form.Label>
-                <InputGroup hasValidation>
-                    <Form.Control type="text" placeholder="Ex: 127.0.0.1"
-                                  isInvalid={formInput.ip.touched && !formInput.ip.isValid}
-                                  name={formInput.ip.name} value={formInput.ip.value}
-                                  onChange={event => handleInput(event, inputKeys[0])}/>
-                    {
-                        formInput.ip.touched && !formInput.ip.isValid ?
-                            <Form.Control.Feedback type="invalid">
-                                {formInput.ip.helperText}
-                            </Form.Control.Feedback> : <></>
-                    }
-                </InputGroup>
-            </Form.Group>
+        <div>
+            <ToastContainer position={"top-right"}
+                            autoClose={3000}
+                            hideProgressBar={false}
+                            closeOnClick
+                            pauseOnFocusLoss
+                            draggable/>
+            <Form className="text-left" onSubmit={updateData.id ? update : create}>
+                <Form.Group className="mb-3" controlId="formIP">
+                    <Form.Label> IP address <span style={{ color: 'red' }}> * </span> </Form.Label>
+                    <InputGroup hasValidation>
+                        <Form.Control type="text" placeholder="Ex: 127.0.0.1"
+                                      isInvalid={formInput.ip.touched && !formInput.ip.isValid}
+                                      name={formInput.ip.name} value={formInput.ip.value}
+                                      onChange={event => handleInput(event, inputKeys[0])}/>
+                        {
+                            formInput.ip.touched && !formInput.ip.isValid ?
+                                <Form.Control.Feedback type="invalid">
+                                    {formInput.ip.helperText}
+                                </Form.Control.Feedback> : <></>
+                        }
+                    </InputGroup>
+                </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formLabel">
-                <Form.Label> Label/Comment <span style={{ color: 'red' }}> * </span> </Form.Label>
-                <InputGroup hasValidation>
-                    <Form.Control type="text" placeholder="Ex: BC2 server"
-                                  isInvalid={formInput.label.touched && !formInput.label.isValid}
-                                  name={formInput.label.name} value={formInput.label.value}
-                                  onChange={event => handleInput(event, inputKeys[1])} />
-                    {
-                        formInput.label.touched && !formInput.label.isValid  ?
-                            <Form.Control.Feedback type="invalid">
-                                {formInput.label.helperText}
-                            </Form.Control.Feedback> : <></>
-                    }
-                </InputGroup>
-            </Form.Group>
+                <Form.Group className="mb-3" controlId="formLabel">
+                    <Form.Label> Label/Comment <span style={{ color: 'red' }}> * </span> </Form.Label>
+                    <InputGroup hasValidation>
+                        <Form.Control type="text" placeholder="Ex: BC2 server"
+                                      isInvalid={formInput.label.touched && !formInput.label.isValid}
+                                      name={formInput.label.name} value={formInput.label.value}
+                                      onChange={event => handleInput(event, inputKeys[1])}/>
+                        {
+                            formInput.label.touched && !formInput.label.isValid ?
+                                <Form.Control.Feedback type="invalid">
+                                    {formInput.label.helperText}
+                                </Form.Control.Feedback> : <></>
+                        }
+                    </InputGroup>
+                </Form.Group>
 
-            <Button variant="primary" type="submit" className="float-right"
-                    disabled={isDisabled} >
-                { updateData.id ? 'Update' : 'Submit' }
-            </Button>
+                <Button variant="primary" type="submit" className="float-right"
+                        disabled={isDisabled}>
+                    {updateData.id ? 'Update' : 'Submit'}
+                </Button>
 
-        </Form>
+            </Form>
+        </div>
 
     );
 };
