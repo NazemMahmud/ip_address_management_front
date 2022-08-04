@@ -8,9 +8,12 @@ import { toast, ToastContainer } from "react-toastify";
 import ToastComponent from "../../components/ToastComponent";
 import 'react-toastify/dist/ReactToastify.css';
 import { REGISTRATION_ERROR_MESSAGE } from "../../config/constants";
+import LoaderComponent from "../../components/LoaderComponent";
 
 const Registration = () => {
     const navigate = useNavigate();
+
+    const [isLoading, setIsLoading] = useState(false);
 
     // for button
     const [isDisabled, setIsDisabled] = useState(true);
@@ -124,20 +127,20 @@ const Registration = () => {
     // sign up action
     const signUp = async event => {
         event.preventDefault();
-
+            setIsLoading(true);
         await registration(formatSubmitData(formInput))
             .then(response => {
+                setIsLoading(false);
                 toast.success(<ToastComponent messages={response.data.data.message} />);
                 setTimeout(() => {
                     navigate("/login");
                 }, 2000);
             })
             .catch(error => {
+                setIsLoading(false);
                 const errorMessage = error?.response?.data?.error ?? REGISTRATION_ERROR_MESSAGE;
                 toast.error(<ToastComponent messages={errorMessage}/>);
             });
-
-        // TODO: add a loader
     };
 
     return (
@@ -148,6 +151,9 @@ const Registration = () => {
                             closeOnClick
                             pauseOnFocusLoss
                             draggable/>
+
+            <LoaderComponent isLoading={isLoading} />
+
             <Card className="w-50">
                 <Card.Body>
                     <Form className="text-left">

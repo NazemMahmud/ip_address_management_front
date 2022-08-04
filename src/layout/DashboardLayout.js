@@ -11,14 +11,15 @@ const DashboardLayout = props => {
 
     // redirect if not logged in
     useEffect(() => {
-        console.log('sadsad: ', accessToken);
         if (!accessToken) {
+            handleLoaderCallback(false);
             navigate("/login");
         }
     }, [accessToken, navigate]);
 
+    // to show/hide loader
     const handleLoaderCallback = data => {
-        props.loaderCallback(data);
+        props.logoutCallback(data);
     };
 
     return (

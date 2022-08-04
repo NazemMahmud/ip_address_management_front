@@ -156,7 +156,7 @@ const Dashboard = () => {
     };
 
     return (
-        <DashboardLayout loaderCallback={loaderCallback}>
+        <DashboardLayout logoutCallback={loaderCallback}>
             <ToastContainer position={"top-right"}
                             autoClose={3000}
                             hideProgressBar={false}

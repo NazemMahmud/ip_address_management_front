@@ -19,7 +19,6 @@ const NavigationBar = ({ loaderCallback }) => {
         await logout()
             .then(response => {
                 dispatch(handleLogout());
-                loaderCallback(false);
             })
             .catch(error => {
                 const errorMessage = error?.response?.data?.error ?? SOMETHING_WENT_WRONG;

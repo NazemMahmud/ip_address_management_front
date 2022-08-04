@@ -10,6 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import ToastComponent from "../../components/ToastComponent";
 import 'react-toastify/dist/ReactToastify.css';
 import { LOGIN_ERROR_MESSAGE } from "../../config/constants";
+import LoaderComponent from "../../components/LoaderComponent";
 
 
 const Login = () => {
@@ -18,6 +19,7 @@ const Login = () => {
 
     const { accessToken } = useSelector(state => state.auth);
 
+    const [isLoading, setIsLoading] = useState(false);
     // for sign in button
     const [isDisabled, setIsDisabled] = useState(true);
 
@@ -92,18 +94,19 @@ const Login = () => {
     const signIn = async event => {
             event.preventDefault();
             const formData = formatSubmitData(formInput);
+            setIsLoading(true);
 
             await login(formData)
                 .then(response => {
+                    setIsLoading(false);
                     dispatch(handleLogin(response.data.data));
                 })
                 .catch(error => {
+                    setIsLoading(false);
                     const errorMessage = error?.response?.data?.error ?? LOGIN_ERROR_MESSAGE;
                     toast.error(<ToastComponent messages={errorMessage}/>);
                 });
-            // TODO: add a loader
         };
-
 
     return (
         <AuthLayout>
@@ -113,6 +116,9 @@ const Login = () => {
                             closeOnClick
                             pauseOnFocusLoss
                             draggable/>
+
+            <LoaderComponent isLoading={isLoading} />
+
             <Card className="w-50">
                 <Card.Body>
                     <Form className="text-left">

@@ -10,6 +10,7 @@
 button:disabled {
   cursor: not-allowed;
   background-color: #767676 !important;
+  border-color: #767676 !important;
 }
 
 .modal-content {
