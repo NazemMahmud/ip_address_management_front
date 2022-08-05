@@ -1,0 +1,13 @@
+version: '3'
+services:
+  react-app:
+    container_name: IP_ADDRESS_APP
+    stdin_open: true
+    build: ./
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - WATCHPACK_POLLING=true

@@ -39,4 +39,4 @@ to
 "start": "./node_modules/.bin/react-scripts start", 
 ```
 5. If you need to change API base url, change it in `src\config\config.js` 
-6. Build and up the docker containers: run `docker compose up -d`
+6. Build and up the docker containers: run `docker-compose up -d`
