@@ -39,7 +39,6 @@ authInstance.interceptors.request.use(
 authInstance.interceptors.response.use(response => {
     return response;
 }, async error => {
-    console.log('error config: ', error.config);
     const originalRequest = error?.config;
     if (error?.response?.status === 401 && !originalRequest?._retry) {
         originalRequest._retry = true;
@@ -48,7 +47,6 @@ authInstance.interceptors.response.use(response => {
 
         originalRequest.headers.Authorization = 'Bearer ' + access_token;
         store.dispatch(handleLogin({ access_token }));
-        console.log('originalRequest: ', originalRequest);
         return authInstance(originalRequest);
     }
     // in case token invalid/mismatch but not expired
