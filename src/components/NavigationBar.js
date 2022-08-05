@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Container, Navbar, Form, Button } from 'react-bootstrap';
+import { Container, Navbar, Form, Button, Nav } from 'react-bootstrap';
 import { logout } from "../services/auth.service";
 import { handleLogout } from "../redux/authentication";
 import { toast, ToastContainer } from "react-toastify";
@@ -36,10 +36,16 @@ const NavigationBar = ({ loaderCallback }) => {
                             pauseOnFocusLoss
                             draggable/>
             <Container>
-                <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+                <Navbar.Brand href="/"> IP Management </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Nav>
+                    <Nav.Link href="/ip-address"> IP Address </Nav.Link>
+                    <Nav.Link href="/audit-log"> Audit Log </Nav.Link>
+                </Nav>
+
                 <Navbar.Collapse id="responsive-navbar-nav">
                 </Navbar.Collapse>
+
                 <Form inline className="mx-3">
                     <Button variant="secondary" type="button" onClick={signOut} className="border-0 bg-transparent">Logout</Button>
                 </Form>

@@ -37,7 +37,7 @@ const AuditDetails = ({ data, isOpen, closeCallback }) => {
                 <Card>
                     <Card.Body>
                         {
-                            Object.keys(data).map(function (property, idx) {
+                            Object.keys(data).map(property => {
                                 return (
                                     <Row key={property} style={{
                                         marginBottom: '10px'
