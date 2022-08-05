@@ -1,7 +1,8 @@
 import React from "react";
 import { Button, Card, Table } from "react-bootstrap";
 
-const Datatable = ({ data, handleEditCallback }) => {
+const Datatable = ({ data, columns, handleEditCallback, actions = [] }) => {
+
     return (
         <Card>
             <Card.Body className="m-0 p-0">
@@ -9,9 +10,11 @@ const Datatable = ({ data, handleEditCallback }) => {
                     <Table striped bordered hover size="sm" className="mb-0 pb-0">
                         <thead>
                         <tr>
-                            <th>IP Address</th>
-                            <th>Label</th>
-                            <th>Action</th>
+                            {
+                                columns.map((col, idx) =>
+                                    <th key={idx}> {col} </th>
+                                )
+                            }
                         </tr>
                         </thead>
                         <tbody>
@@ -20,12 +23,14 @@ const Datatable = ({ data, handleEditCallback }) => {
                                 <tr key={idx}>
                                     <td> {info.ip} </td>
                                     <td> {info.label} </td>
-                                    <td>
+
+                                    <td style={{ display: actions.includes('update') ? 'block' : 'none' }}>
                                         <Button size="sm" variant="warning" type="button"
                                                 onClick={() => handleEditCallback(info.id)}>
                                             Update
                                         </Button>
                                     </td>
+
                                 </tr>
                             )
                         }

@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card, Row, Col } from "react-bootstrap";
-import DashboardLayout from "../../layout/DashboardLayout";
-import Datatable from "../../components/Datatable";
-import PaginationComponent from "../../components/PaginationComponent";
-import { setHttpParams } from "../../utility/utils";
-import { getAllIp, getSingleIp } from "../../services/ip.service";
-import AddUpdateForm from "../../components/AddUpdateForm";
+import DashboardLayout from "../layout/DashboardLayout";
+import Datatable from "../components/Datatable";
+import PaginationComponent from "../components/PaginationComponent";
+import { setHttpParams } from "../utility/utils";
+import { getAllIp, getSingleIp } from "../services/ip.service";
+import AddUpdateForm from "../components/AddUpdateForm";
 import { toast, ToastContainer } from "react-toastify";
-import ToastComponent from "../../components/ToastComponent";
-import { SOMETHING_WENT_WRONG } from "../../config/constants";
+import ToastComponent from "../components/ToastComponent";
+import { SOMETHING_WENT_WRONG } from "../config/constants";
 import 'react-toastify/dist/ReactToastify.css';
-import LoaderComponent from "../../components/LoaderComponent";
+import LoaderComponent from "../components/LoaderComponent";
 
-const Dashboard = () => {
+const IpAddress = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -25,11 +25,20 @@ const Dashboard = () => {
         page: queryParams.get("page") ?? 1
     };
 
+    const actions = ['update'];
+
     const [isLoading, setIsLoading] = useState(true);
     const [isSetData, setIsSetData] = useState(false);
     const [params, setParams] = useState(initialParams);
     const [dataList, setDataList] = useState([]);
     const [oldIPData, setOldIPData] = useState({});
+    const [columns, setColumns] = useState(['IP Address', 'Label']);
+
+    useEffect(() => {
+        if (actions.length) {
+            setColumns([...columns, 'Action']);
+        }
+    }, []);
 
     // this info will come from API if it is paginated
     const [paginationInfo, setPaginationInfo] = useState({
@@ -181,7 +190,11 @@ const Dashboard = () => {
             <Row>
                 <Col>
                     {
-                        isSetData ? <Datatable data={dataList} handleEditCallback={handleEditCallback}/> : <></>
+                        isSetData ?
+                            <Datatable data={dataList}
+                                       columns={columns}
+                                       handleEditCallback={handleEditCallback}
+                                       actions={actions} /> : <></>
                     }
                 </Col>
             </Row>
@@ -196,4 +209,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default IpAddress;
