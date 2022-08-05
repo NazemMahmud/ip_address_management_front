@@ -5,6 +5,7 @@ const Datatable = ({
                        data,
                        columns,
                        handleEditCallback= undefined,
+                       handleDetailsCallback= undefined,
                        actions = []
 }) => {
 
@@ -50,6 +51,15 @@ const Datatable = ({
                                                 <Button size="sm" variant="warning" type="button"
                                                         onClick={() => handleEditCallback(item.id)}>
                                                     Update
+                                                </Button>
+                                            </td> : <></>
+                                    }
+                                    {
+                                        actions.includes('details') ?
+                                            <td>
+                                                <Button size="sm" variant="info" type="button"
+                                                        onClick={() => handleDetailsCallback(item.id)}>
+                                                    Details
                                                 </Button>
                                             </td> : <></>
                                     }

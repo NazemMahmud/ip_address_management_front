@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Card, Row, Col } from "react-bootstrap";
-import DashboardLayout from "../layout/DashboardLayout";
-import Datatable from "../components/Datatable";
-import PaginationComponent from "../components/PaginationComponent";
-import { setHttpParams } from "../utility/utils";
-import { getAllIp, getSingleIp } from "../services/ip.service";
-import AddUpdateForm from "../components/AddUpdateForm";
+import { Row, Col } from "react-bootstrap";
+import DashboardLayout from "../../layout/DashboardLayout";
+import Datatable from "../../components/Datatable";
+import PaginationComponent from "../../components/PaginationComponent";
+import { setHttpParams } from "../../utility/utils";
+import { getAllLogs } from "../../services/auditLog.service";
 import { toast, ToastContainer } from "react-toastify";
-import ToastComponent from "../components/ToastComponent";
-import { SOMETHING_WENT_WRONG } from "../config/constants";
+import ToastComponent from "../../components/ToastComponent";
+import { SOMETHING_WENT_WRONG } from "../../config/constants";
 import 'react-toastify/dist/ReactToastify.css';
-import LoaderComponent from "../components/LoaderComponent";
+import LoaderComponent from "../../components/LoaderComponent";
+import AuditDetails from "./AuditDetails";
 
-const IpAddress = () => {
+const AuditLog = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -25,14 +25,16 @@ const IpAddress = () => {
         page: queryParams.get("page") ?? 1
     };
 
-    const actions = ['update'];
+    const actions = ['details'];
+    const columns = ['User Name', 'Event Type', 'Model Name', 'Model Id'];
 
     const [isLoading, setIsLoading] = useState(true);
     const [isSetData, setIsSetData] = useState(false);
     const [params, setParams] = useState(initialParams);
-    const [dataList, setDataList] = useState([]);
-    const [oldIPData, setOldIPData] = useState({});
-    const columns = ['IP Address', 'Label'];
+    const [originalDataList, setOriginalDataList] = useState([]);
+    const [formattedDataList, setFormattedDataList] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [detailsData, setDetailsData] = useState({});
 
     // this info will come from API if it is paginated
     const [paginationInfo, setPaginationInfo] = useState({
@@ -61,12 +63,32 @@ const IpAddress = () => {
         /* eslint-disable-next-line */
     }, [params]);
 
+    /**
+     * format data: to show in the table
+     * @param data
+     * @returns {[]}
+     */
+    const formatData = data => {
+        const formattedData = [];
+        data.forEach(item => {
+            formattedData.push({
+                id: item.id,
+                user_name: item.user_name,
+                event: item.event,
+                model_name: item.model_name,
+                model_id: item.model_id,
+            });
+        });
+        return formattedData;
+    };
+
     const getDataList = async () => {
         setIsLoading(true);
-        await getAllIp(params)
+        await getAllLogs(params)
             .then(res => {
                 const response = res.data;
-                setDataList(response.data);
+                setOriginalDataList(response.data);
+                setFormattedDataList(formatData(response.data));
 
                 setPaginationInfo({
                     ...paginationInfo,
@@ -99,64 +121,17 @@ const IpAddress = () => {
         });
     };
 
-    /**
-     * After add new ip address, update data table
-     * Show the new data at top
-     * Update pagination info
-     * @param data
-     */
-    const ipAddCallback = data => {
-        if (params.page == 1) {
-            const newDataList = [...dataList];
-            newDataList.unshift(data);
-            setDataList(newDataList);
-            setPaginationInfo({
-                ...paginationInfo,
-                to: paginationInfo.to + 1,
-                total: paginationInfo.total + 1,
-            });
-            setIsLoading(false);
-        } else {
-            setParams({
-                ...params,
-                page: 1,
-            });
-        }
-    };
-
-    /**
-     * After update ip address, update in the data table
-     * @param updatedData
-     */
-    const ipUpdateCallback = updatedData => {
-        const newDataList = [...dataList];
-        const findIndex = dataList.findIndex(item => item.id == updatedData.id);
-        newDataList[findIndex] = updatedData;
-        setDataList([...newDataList]);
-        setOldIPData({});
-        setIsLoading(false);
-    };
 
     const loaderCallback = data => {
         setIsLoading(data);
     };
 
-    /**
-     * Call API & populate update form
-     */
-    const handleEditCallback = async id => {
-        setIsLoading(true);
-        await getSingleIp(id)
-            .then(res => {
-                const response = res.data;
-                setOldIPData({ ...response.data });
-                setIsLoading(false);
-            })
-            .catch(error => {
-                const errorMessage = error?.response?.data?.error ?? SOMETHING_WENT_WRONG;
-                toast.error(<ToastComponent messages={errorMessage}/>);
-                setIsLoading(false);
-            });
+    // on click details: show details modal
+    const handleDetails = (id) => {
+        const data = originalDataList.find(item => item.id == id);
+        setDetailsData(data);
+        setShowModal(!showModal);
+        // navigate(`/cards/details/${page}/${section}/${id}`);
     };
 
     return (
@@ -169,39 +144,31 @@ const IpAddress = () => {
                             draggable/>
             <LoaderComponent isLoading={isLoading} />
 
-            <Row className="mb-5">
-                <Col>
-                    <Card >
-                        <Card.Body>
-                            <AddUpdateForm updateData={oldIPData}
-                                           ipAddCallback={ipAddCallback}
-                                           ipUpdateCallback={ipUpdateCallback}
-                                           loaderCallback={loaderCallback} />
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-
             <Row>
                 <Col>
                     {
                         isSetData ?
-                            <Datatable data={dataList}
+                            <Datatable data={formattedDataList}
                                        columns={columns}
-                                       handleEditCallback={handleEditCallback}
+                                       handleDetailsCallback={handleDetails}
                                        actions={actions} /> : <></>
                     }
                 </Col>
             </Row>
+
             {
-                dataList.length ?
+                formattedDataList.length ?
                     <PaginationComponent paginationInfo={paginationInfo}
-                                                        paginationCallback={paginationCallback}
+                                         paginationCallback={paginationCallback}
                     /> : <></>
             }
 
+            { showModal && detailsData ? <AuditDetails data={detailsData}
+                                       isOpen={showModal}
+                                       closeCallback={() => setShowModal(!showModal)}/> : <></>
+            }
         </DashboardLayout>
     );
 };
 
-export default IpAddress;
+export default AuditLog;

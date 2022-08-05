@@ -13,7 +13,7 @@ button:disabled {
   border-color: #767676 !important;
 }
 
-.modal-content {
+.loader .modal-content {
   background-color: transparent !important;
   border: none !important;
 }
