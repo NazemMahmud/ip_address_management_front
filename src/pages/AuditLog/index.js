@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Badge } from "react-bootstrap";
 import DashboardLayout from "../../layout/DashboardLayout";
 import Datatable from "../../components/Datatable";
 import PaginationComponent from "../../components/PaginationComponent";
@@ -64,17 +64,36 @@ const AuditLog = () => {
     }, [params]);
 
     /**
+     * event with badge ui
+     * @param data
+     */
+    const formatEvent = data => {
+        switch (data) {
+            case 'created':
+                data = <h5 > <Badge className="font-weight-normal p-2" bg="success">{data}</Badge> </h5>;
+                break;
+            case 'updated':
+                data = <h5 > <Badge className="font-weight-normal p-2" bg="info">{data}</Badge> </h5>;
+                break;
+            default:
+                break;
+        }
+
+        return data;
+    };
+
+    /**
      * format data: to show in the table
      * @param data
      * @returns {[]}
      */
-    const formatData = data => {
+    const formatTableData = data => {
         const formattedData = [];
         data.forEach(item => {
             formattedData.push({
                 id: item.id,
                 user_name: item.user_name,
-                event: item.event,
+                event: formatEvent(item.event),
                 model_name: item.model_name,
                 model_id: item.model_id,
             });
@@ -88,7 +107,7 @@ const AuditLog = () => {
             .then(res => {
                 const response = res.data;
                 setOriginalDataList(response.data);
-                setFormattedDataList(formatData(response.data));
+                setFormattedDataList(formatTableData(response.data));
 
                 setPaginationInfo({
                     ...paginationInfo,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Button, Card, Row, Col } from "react-bootstrap";
+import { Modal, Button, Card, Row, Col, Badge } from "react-bootstrap";
 
 
 const AuditDetails = ({ data, isOpen, closeCallback }) => {
@@ -7,6 +7,25 @@ const AuditDetails = ({ data, isOpen, closeCallback }) => {
     const formatDataValues = value => {
         let item = JSON.parse(value);
         return  JSON.stringify(item, null, 4);
+    };
+
+    /**
+     * event with badge ui
+     * @param data
+     */
+    const formatEventData = data => {
+        switch (data) {
+            case 'created':
+                data = <h5 > <Badge className="font-weight-normal p-2" bg="success">{data}</Badge> </h5>;
+                break;
+            case 'updated':
+                data = <h5 > <Badge className="font-weight-normal p-2" bg="info">{data}</Badge> </h5>;
+                break;
+            default:
+                break;
+        }
+
+        return data;
     };
 
     return (
@@ -21,18 +40,27 @@ const AuditDetails = ({ data, isOpen, closeCallback }) => {
                             Object.keys(data).map(function (property, idx) {
                                 return (
                                     <Row key={property} style={{
-                                        borderBottom: '1px dotted gray',
-                                        marginTop: '10px'
+                                        marginBottom: '10px'
                                     }}>
                                         <Col>
-                                            <h5><b>{property} :</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                {
-                                                    (property === 'old_values' || property === 'new_values') ?
-                                                        <pre dangerouslySetInnerHTML={{
-                                                            __html: formatDataValues(data[property]),
-                                                        }} />  : `${data[property]}`
-                                                }
-                                            </h5>
+                                            <Card>
+                                                <Card.Body>
+                                                    <Row>
+                                                        <Col xs={3} ms={3} lg={3} sm={3}> <h5>{property} : </h5>< /Col>
+                                                        <Col>
+                                                            {
+                                                                (property === 'old_values' || property === 'new_values') ?
+                                                                    <pre dangerouslySetInnerHTML={{
+                                                                        __html: formatDataValues(data[property]),
+                                                                    }} />  : ( (property === 'event') ?
+                                                                        formatEventData( data[property] )
+                                                                : `${data[property]}` )
+                                                            }
+                                                        </Col>
+                                                    </Row>
+                                                </Card.Body>
+                                            </Card>
+
                                         </Col>
                                     </Row>
                                 );
