@@ -1,5 +1,4 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
 import { Button, Card, Col, Row } from "react-bootstrap";
 
 const PaginationComponent = ({ paginationInfo, paginationCallback }) => {

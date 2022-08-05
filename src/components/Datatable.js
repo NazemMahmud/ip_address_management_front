@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Card, Table } from "react-bootstrap";
+import { Button, Card, OverlayTrigger, Table, Tooltip } from "react-bootstrap";
+import { PencilSquare, ArrowsAngleExpand } from 'react-bootstrap-icons';
 
 const Datatable = ({
                        data,
@@ -9,7 +10,7 @@ const Datatable = ({
                        actions = []
 }) => {
 
-    // id column won't show in the table
+    // id & created_at column won't show in the table
     const getColumn = item => {
         const tds = [];
 
@@ -21,6 +22,19 @@ const Datatable = ({
 
         return tds;
     };
+
+    /** Tooltip on hover over action button  **/
+    const editTooltip = (props) => (
+        <Tooltip id="button-tooltip" {...props}>
+            Edit
+        </Tooltip>
+    );
+
+    const detailsTooltip = (props) => (
+        <Tooltip id="button-tooltip" {...props}>
+            Details
+        </Tooltip>
+    );
 
 
     return (
@@ -48,19 +62,29 @@ const Datatable = ({
                                     {
                                         actions.includes('update') ?
                                             <td>
-                                                <Button size="sm" variant="warning" type="button"
-                                                        onClick={() => handleEditCallback(item.id)}>
-                                                    Update
-                                                </Button>
+                                                <OverlayTrigger delay={{ show: 250, hide: 400 }}
+                                                                overlay={editTooltip} defaultShow={false}
+                                                                placement="bottom">
+                                                    <Button size="md" variant="default" type="button"
+                                                            onClick={() => handleEditCallback(item.id)}>
+                                                        <PencilSquare />
+                                                    </Button>
+                                                </OverlayTrigger>
                                             </td> : <></>
                                     }
                                     {
                                         actions.includes('details') ?
                                             <td>
-                                                <Button size="sm" variant="info" type="button"
-                                                        onClick={() => handleDetailsCallback(item.id)}>
-                                                    Details
-                                                </Button>
+                                                <OverlayTrigger delay={{ show: 250, hide: 400 }}
+                                                                defaultShow={false}
+                                                                overlay={detailsTooltip}
+                                                                placement="bottom">
+                                                    <Button size="sm" variant="secondary" type="button"
+                                                            onClick={() => handleDetailsCallback(item.id)}>
+                                                        <ArrowsAngleExpand />
+                                                    </Button>
+                                                </OverlayTrigger>
+
                                             </td> : <></>
                                     }
                                 </tr>
