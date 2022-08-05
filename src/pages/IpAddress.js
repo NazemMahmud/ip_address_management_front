@@ -32,13 +32,7 @@ const IpAddress = () => {
     const [params, setParams] = useState(initialParams);
     const [dataList, setDataList] = useState([]);
     const [oldIPData, setOldIPData] = useState({});
-    const [columns, setColumns] = useState(['IP Address', 'Label']);
-
-    useEffect(() => {
-        if (actions.length) {
-            setColumns([...columns, 'Action']);
-        }
-    }, []);
+    const columns = ['IP Address', 'Label'];
 
     // this info will come from API if it is paginated
     const [paginationInfo, setPaginationInfo] = useState({
@@ -64,6 +58,7 @@ const IpAddress = () => {
     /** Get all/paginated ip address data for table **/
     useEffect( () => {
         getDataList();
+        /* eslint-disable-next-line */
     }, [params]);
 
     const getDataList = async () => {

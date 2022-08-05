@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Card, Row, Col } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import DashboardLayout from "../layout/DashboardLayout";
 import Datatable from "../components/Datatable";
 import PaginationComponent from "../components/PaginationComponent";
 import { setHttpParams } from "../utility/utils";
-import { getAllIp, getSingleIp } from "../services/ip.service";
-import AddUpdateForm from "../components/AddUpdateForm";
+import { getAllLogs } from "../services/auditLog.service";
 import { toast, ToastContainer } from "react-toastify";
 import ToastComponent from "../components/ToastComponent";
 import { SOMETHING_WENT_WRONG } from "../config/constants";
@@ -24,6 +23,9 @@ const AuditLog = () => {
         pageOffset: queryParams.get("pageOffset") ?? 10,
         page: queryParams.get("page") ?? 1
     };
+
+    const actions = [];
+    const columns = ['User Name', 'Event Type', 'Model Name', 'Model Id', 'Old Values', 'New Values'];
 
     const [isLoading, setIsLoading] = useState(true);
     const [isSetData, setIsSetData] = useState(false);
@@ -54,14 +56,26 @@ const AuditLog = () => {
     /** Get all/paginated ip address data for table **/
     useEffect( () => {
         getDataList();
+        /* eslint-disable-next-line */
     }, [params]);
+
+    const formatData = data => {
+        data.forEach(item => {
+            if (item.hasOwnProperty('new_values')) {
+                item['new_values'] = JSON.parse(item['new_values']);
+            }
+            return item;
+        });
+        return data;
+    };
 
     const getDataList = async () => {
         setIsLoading(true);
-        await getAllIp(params)
+        await getAllLogs(params)
             .then(res => {
                 const response = res.data;
-                setDataList(response.data);
+                const data = formatData(response.data);
+                setDataList(data);
 
                 setPaginationInfo({
                     ...paginationInfo,
@@ -112,17 +126,21 @@ const AuditLog = () => {
 
             <Row>
                 <Col>
-                    {/*{*/}
-                    {/*    isSetData ? <Datatable data={dataList} handleEditCallback={handleEditCallback}/> : <></>*/}
-                    {/*}*/}
+                    {
+                        isSetData ?
+                            <Datatable data={dataList}
+                                       columns={columns}
+                                       actions={actions} /> : <></>
+                    }
                 </Col>
             </Row>
-            {/*{*/}
-            {/*    dataList.length ?*/}
-            {/*        <PaginationComponent paginationInfo={paginationInfo}*/}
-            {/*                                            paginationCallback={paginationCallback}*/}
-            {/*        /> : <></>*/}
-            {/*}*/}
+
+            {
+                dataList.length ?
+                    <PaginationComponent paginationInfo={paginationInfo}
+                                         paginationCallback={paginationCallback}
+                    /> : <></>
+            }
 
         </DashboardLayout>
     );

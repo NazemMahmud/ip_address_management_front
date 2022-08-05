@@ -37,6 +37,7 @@ const Login = () => {
             email: {
                 key: 'email',
                 value: '',
+                /* eslint-disable-next-line */
                 pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
                 isValid: false,
                 helperText: '',

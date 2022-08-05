@@ -15,6 +15,7 @@ const DashboardLayout = props => {
             handleLoaderCallback(false);
             navigate("/login");
         }
+        /* eslint-disable-next-line */
     }, [accessToken, navigate]);
 
     // to show/hide loader

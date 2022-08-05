@@ -1,7 +1,26 @@
 import React from "react";
 import { Button, Card, Table } from "react-bootstrap";
 
-const Datatable = ({ data, columns, handleEditCallback, actions = [] }) => {
+const Datatable = ({
+                       data,
+                       columns,
+                       handleEditCallback= undefined,
+                       actions = []
+}) => {
+
+    // id column won't show in the table
+    const getColumn = item => {
+        const tds = [];
+
+        for (const property in item) {
+            if (property !== 'id' && property != 'created_at') {
+                tds.push(<td key={property} style={{ whiteSpace: 'pre' }}>{item[property]}</td>);
+            }
+        }
+
+        return tds;
+    };
+
 
     return (
         <Card>
@@ -15,22 +34,25 @@ const Datatable = ({ data, columns, handleEditCallback, actions = [] }) => {
                                     <th key={idx}> {col} </th>
                                 )
                             }
+                            {
+                                actions.length ?  <th> Actions </th> : <></>
+                            }
                         </tr>
                         </thead>
                         <tbody>
                         {
-                            data.map((info, idx) =>
+                            data.map((item, idx) =>
                                 <tr key={idx}>
-                                    <td> {info.ip} </td>
-                                    <td> {info.label} </td>
-
-                                    <td style={{ display: actions.includes('update') ? 'block' : 'none' }}>
-                                        <Button size="sm" variant="warning" type="button"
-                                                onClick={() => handleEditCallback(info.id)}>
-                                            Update
-                                        </Button>
-                                    </td>
-
+                                    { getColumn(item) }
+                                    {
+                                        actions.includes('update') ?
+                                            <td>
+                                                <Button size="sm" variant="warning" type="button"
+                                                        onClick={() => handleEditCallback(item.id)}>
+                                                    Update
+                                                </Button>
+                                            </td> : <></>
+                                    }
                                 </tr>
                             )
                         }
