@@ -49,11 +49,15 @@ authInstance.interceptors.response.use(response => {
         store.dispatch(handleLogin({ access_token }));
         return authInstance(originalRequest);
     }
-    // in case token invalid/mismatch but not expired
-    store.dispatch(handleLogout());
-    setTimeout(() => {
-        window.location.href = "/login";
-    }, 1000);
+
+    if (error?.response?.error?.error === 'Token is Invalid') {
+        // in case token invalid/mismatch but not expired
+        store.dispatch(handleLogout());
+        setTimeout(() => {
+            window.location.href = "/login";
+        }, 1000);
+    }
+
     return Promise.reject(error);
 });
 
