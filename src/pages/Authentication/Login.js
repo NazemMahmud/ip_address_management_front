@@ -4,19 +4,21 @@ import AuthLayout from "../../layout/AuthLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { checkDisableButton, formatSubmitData } from "../../utility/utils";
-import { login } from "../../services/auth.service";
-import { handleLogin } from "../../redux/authentication";
+// import { login } from "../../services/auth.service";
+// import { handleLogin } from "../../redux/authentication";
 import { toast, ToastContainer } from "react-toastify";
 import ToastComponent from "../../components/ToastComponent";
 import 'react-toastify/dist/ReactToastify.css';
 import { LOGIN_ERROR_MESSAGE } from "../../config/constants";
 import LoaderComponent from "../../components/LoaderComponent";
+import { useLoginUserQuery } from "../../redux/api/authApi";
 
 
 const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const [ loginUser, { isError, error, isSuccess }] = useLoginUserQuery();
     const { accessToken } = useSelector(state => state.auth);
 
     const [isLoading, setIsLoading] = useState(false);
@@ -96,17 +98,25 @@ const Login = () => {
             event.preventDefault();
             const formData = formatSubmitData(formInput);
             setIsLoading(true);
-
-            await login(formData)
-                .then(response => {
+            await loginUser(formData)
+                .unwrap()
+                .then(() => {
                     setIsLoading(false);
-                    dispatch(handleLogin(response.data.data));
-                })
-                .catch(error => {
-                    setIsLoading(false);
-                    const errorMessage = error?.response?.data?.error ?? LOGIN_ERROR_MESSAGE;
-                    toast.error(<ToastComponent messages={errorMessage}/>);
-                });
+                }).catch(error => {
+                setIsLoading(false);
+                const errorMessage = error?.response?.data?.error ?? LOGIN_ERROR_MESSAGE;
+                toast.error(<ToastComponent messages={errorMessage}/>);
+            });
+            // await login(formData)
+            //     .then(response => {
+            //         setIsLoading(false);
+            //         // dispatch(handleLogin(response.data.data));
+            //     })
+            //     .catch(error => {
+            //         setIsLoading(false);
+            //         const errorMessage = error?.response?.data?.error ?? LOGIN_ERROR_MESSAGE;
+            //         toast.error(<ToastComponent messages={errorMessage}/>);
+            //     });
         };
 
     return (

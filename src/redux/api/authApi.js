@@ -1,6 +1,8 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { handleLogin } from "../authSlice";
+import { appConfig } from "../../config/config";
 
-const baseUrl = process.env.API_BASE_URL;
+const baseUrl = appConfig.apiBaseUrl;
 // Define a service using a base URL and expected endpoints
 export const authApi = createApi({
     reducerPath: 'authApi',
@@ -9,13 +11,19 @@ export const authApi = createApi({
         getPokemonByName: builder.query({
             query: (name) => `pokemon/${name}`,
         }),
-        registerUser: builder.query({
+        loginUser: builder.mutation({
             query(data) {
                 return {
-                    url: '/register',
+                    url: '/login',
                     method: 'POST',
                     body: data,
                 };
+            },
+            async onQueryStarted(args, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    await dispatch(handleLogin(data.data));
+                } catch (error) {}
             },
         }),
     }),
@@ -24,4 +32,4 @@ export const authApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetPokemonByNameQuery, useRegisterUserQuery } = authApi;
+export const {  useLoginUserQuery } = authApi;

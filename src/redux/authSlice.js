@@ -11,6 +11,7 @@ export const authSlice = createSlice({
     },
     reducers: {
         handleLogin: (state, action) => {
+            console.log('action.payload: ', action.payload);
             const decoded = jwt_decode(action.payload.access_token);
             state.userData = decoded.payload;
             state.accessToken = action.payload.access_token;
@@ -32,3 +33,6 @@ export const authSlice = createSlice({
 export const { handleLogin, handleLogout } = authSlice.actions;
 
 export default authSlice.reducer;
+
+export const selectCurrentUser = (state) => state.auth.userData;
+export const selectCurrentToken = (state) => state.auth.accessToken;
