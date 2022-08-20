@@ -3,17 +3,23 @@ import { Button, Card, Form, InputGroup } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../layout/AuthLayout";
 import { checkDisableButton, formatSubmitData } from "../../utility/utils";
-import { registration } from "../../services/auth.service";
 import { toast, ToastContainer } from "react-toastify";
 import ToastComponent from "../../components/ToastComponent";
 import 'react-toastify/dist/ReactToastify.css';
 import { REGISTRATION_ERROR_MESSAGE } from "../../config/constants";
 import LoaderComponent from "../../components/LoaderComponent";
 
+/** API call: with axios  **/
+// import { registration } from "../../services/auth.service";
+
+/** API call: with RTK Query  **/
+import { useRegisterMutation } from "../../redux/api/authApi";
+
 const Registration = () => {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
+    const [ register ] = useRegisterMutation(); /** For API call: with RTK Query  **/
 
     // for button
     const [isDisabled, setIsDisabled] = useState(true);
@@ -128,7 +134,9 @@ const Registration = () => {
     // sign up action
     const signUp = async event => {
         event.preventDefault();
-            setIsLoading(true);
+        setIsLoading(true);
+        /** API call: axios*/
+        /*
         await registration(formatSubmitData(formInput))
             .then(response => {
                 setIsLoading(false);
@@ -141,7 +149,23 @@ const Registration = () => {
                 setIsLoading(false);
                 const errorMessage = error?.response?.data?.error ?? REGISTRATION_ERROR_MESSAGE;
                 toast.error(<ToastComponent messages={errorMessage}/>);
-            });
+            });*/
+        /** API call: RTK Query  */
+
+            await register(formatSubmitData(formInput))
+                .unwrap()
+                .then(response => {
+                    setIsLoading(false);
+                    toast.success(<ToastComponent messages={response.data.message} />);
+                    setTimeout(() => {
+                        navigate("/login");
+                    }, 2000);
+                })
+                .catch(error => {
+                    setIsLoading(false);
+                    const errorMessage = error?.data?.error ?? REGISTRATION_ERROR_MESSAGE;
+                    toast.error(<ToastComponent messages={errorMessage}/>);
+                });
     };
 
     return (

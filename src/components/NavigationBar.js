@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { Container, Navbar, Form, Button, Nav } from 'react-bootstrap';
 import { logout } from "../services/auth.service";
-import { handleLogout } from "../redux/authentication";
+import { handleLogout } from "../redux/authSlice";
 import { toast, ToastContainer } from "react-toastify";
 import ToastComponent from "./ToastComponent";
 import 'react-toastify/dist/ReactToastify.css';
