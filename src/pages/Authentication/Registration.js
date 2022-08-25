@@ -19,9 +19,10 @@ const Registration = () => {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
-    const [ register ] = useRegisterMutation(); /** For API call: with RTK Query  **/
+    const [register] = useRegisterMutation();
+    /** For API call: with RTK Query  **/
 
-    // for button
+        // for button
     const [isDisabled, setIsDisabled] = useState(true);
     /** ******************* form based action *******************************/
     const [formInput, setFormInput] = useReducer(
@@ -108,7 +109,7 @@ const Registration = () => {
                 checkConfirmPassword(input.value);
                 break;
             case 'confirmPassword':
-                input.isValid =  formInput.confirmPassword.value === formInput.password.value;
+                input.isValid = formInput.confirmPassword.value === formInput.password.value;
                 input.helperText = (!input.isValid) ? "Password doesn't match" : '';
                 break;
             default:
@@ -131,32 +132,32 @@ const Registration = () => {
 
     /** ****** Form Submission section  *******/
 
-    // sign up action
+        // sign up action
     const signUp = async event => {
-        event.preventDefault();
-        setIsLoading(true);
-        /** API call: axios*/
-        /*
-        await registration(formatSubmitData(formInput))
-            .then(response => {
-                setIsLoading(false);
-                toast.success(<ToastComponent messages={response.data.data.message} />);
-                setTimeout(() => {
-                    navigate("/login");
-                }, 2000);
-            })
-            .catch(error => {
-                setIsLoading(false);
-                const errorMessage = error?.response?.data?.error ?? REGISTRATION_ERROR_MESSAGE;
-                toast.error(<ToastComponent messages={errorMessage}/>);
-            });*/
-        /** API call: RTK Query  */
+            event.preventDefault();
+            setIsLoading(true);
+            /** API call: axios*/
+            /*
+            await registration(formatSubmitData(formInput))
+                .then(response => {
+                    setIsLoading(false);
+                    toast.success(<ToastComponent messages={response.data.data.message} />);
+                    setTimeout(() => {
+                        navigate("/login");
+                    }, 2000);
+                })
+                .catch(error => {
+                    setIsLoading(false);
+                    const errorMessage = error?.response?.data?.error ?? REGISTRATION_ERROR_MESSAGE;
+                    toast.error(<ToastComponent messages={errorMessage}/>);
+                });*/
 
+            /** API call: RTK Query  */
             await register(formatSubmitData(formInput))
                 .unwrap()
                 .then(response => {
                     setIsLoading(false);
-                    toast.success(<ToastComponent messages={response.data.message} />);
+                    toast.success(<ToastComponent messages={response.data.message}/>);
                     setTimeout(() => {
                         navigate("/login");
                     }, 2000);
@@ -166,7 +167,7 @@ const Registration = () => {
                     const errorMessage = error?.data?.error ?? REGISTRATION_ERROR_MESSAGE;
                     toast.error(<ToastComponent messages={errorMessage}/>);
                 });
-    };
+        };
 
     return (
         <AuthLayout>
@@ -177,13 +178,13 @@ const Registration = () => {
                             pauseOnFocusLoss
                             draggable/>
 
-            <LoaderComponent isLoading={isLoading} />
+            <LoaderComponent isLoading={isLoading}/>
 
             <Card className="w-50">
                 <Card.Body>
                     <Form className="text-left">
                         <Form.Group className="mb-3" controlId="formName">
-                            <Form.Label> { formInput.name.label } <span style={{ color: 'red' }}> * </span></Form.Label>
+                            <Form.Label> {formInput.name.label} <span style={{ color: 'red' }}> * </span></Form.Label>
                             <InputGroup hasValidation>
                                 <Form.Control type="name" placeholder="Enter Name"
                                               isInvalid={formInput.name.touched && !formInput.name.isValid}
@@ -200,7 +201,7 @@ const Registration = () => {
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="formEmail">
-                            <Form.Label> { formInput.email.label } <span style={{ color: 'red' }}> * </span></Form.Label>
+                            <Form.Label> {formInput.email.label} <span style={{ color: 'red' }}> * </span></Form.Label>
                             <InputGroup hasValidation>
                                 <Form.Control type="email" placeholder="Enter Email"
                                               isInvalid={formInput.email.touched && !formInput.email.isValid}
@@ -217,34 +218,37 @@ const Registration = () => {
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="formPassword">
-                            <Form.Label> { formInput.password.label } <span style={{ color: 'red' }}> * </span></Form.Label>
-                                <InputGroup hasValidation>
-                                    <Form.Control type="password" placeholder="Password"
-                                                  isInvalid={formInput.password.touched && !formInput.password.isValid}
-                                                  name={formInput.password.name} defaultValue={formInput.password.value}
-                                                  onChange={event => handleInput(event, inputKeys[2])}
-                                    />
+                            <Form.Label> {formInput.password.label} <span
+                                style={{ color: 'red' }}> * </span></Form.Label>
+                            <InputGroup hasValidation>
+                                <Form.Control type="password" placeholder="Password"
+                                              isInvalid={formInput.password.touched && !formInput.password.isValid}
+                                              name={formInput.password.name} defaultValue={formInput.password.value}
+                                              onChange={event => handleInput(event, inputKeys[2])}
+                                />
 
-                                    {
-                                        formInput.password.touched && !formInput.password.isValid  ?
-                                            <Form.Control.Feedback type="invalid">
-                                                {formInput.password.helperText}
-                                            </Form.Control.Feedback> : <></>
-                                    }
-                                </InputGroup>
+                                {
+                                    formInput.password.touched && !formInput.password.isValid ?
+                                        <Form.Control.Feedback type="invalid">
+                                            {formInput.password.helperText}
+                                        </Form.Control.Feedback> : <></>
+                                }
+                            </InputGroup>
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="formConfirmPassword">
-                            <Form.Label> { formInput.confirmPassword.label } <span style={{ color: 'red' }}> * </span></Form.Label>
+                            <Form.Label> {formInput.confirmPassword.label} <span
+                                style={{ color: 'red' }}> * </span></Form.Label>
                             <InputGroup hasValidation>
                                 <Form.Control type="password" placeholder="Password"
                                               isInvalid={formInput.confirmPassword.touched && !formInput.confirmPassword.isValid}
-                                              name={formInput.confirmPassword.name} defaultValue={formInput.confirmPassword.value}
+                                              name={formInput.confirmPassword.name}
+                                              defaultValue={formInput.confirmPassword.value}
                                               onChange={event => handleInput(event, inputKeys[3])}
                                 />
 
                                 {
-                                    formInput.confirmPassword.touched && !formInput.confirmPassword.isValid  ?
+                                    formInput.confirmPassword.touched && !formInput.confirmPassword.isValid ?
                                         <Form.Control.Feedback type="invalid">
                                             {formInput.confirmPassword.helperText}
                                         </Form.Control.Feedback> : <></>
@@ -254,7 +258,7 @@ const Registration = () => {
 
                         <Link to="/login"> Already have an new account ? Sign In</Link>
                         <Button variant="primary" type="submit" disabled={isDisabled}
-                                className="float-right"  onClick={signUp}>
+                                className="float-right" onClick={signUp}>
                             Sign up
                         </Button>
                     </Form>

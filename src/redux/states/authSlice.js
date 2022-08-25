@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getUserData, getAccessToken } from "../utility/utils";
+import { getUserData, getAccessToken } from "../../utility/utils";
 import jwt_decode from "jwt-decode";
 
 

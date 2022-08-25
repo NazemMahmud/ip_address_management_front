@@ -4,21 +4,25 @@ import AuthLayout from "../../layout/AuthLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { checkDisableButton, formatSubmitData } from "../../utility/utils";
-import { login } from "../../services/auth.service";
-import { handleLogin } from "../../redux/authSlice";
+import { handleLogin } from "../../redux/states/authSlice";
 import { toast, ToastContainer } from "react-toastify";
 import ToastComponent from "../../components/ToastComponent";
 import 'react-toastify/dist/ReactToastify.css';
 import { LOGIN_ERROR_MESSAGE } from "../../config/constants";
 import LoaderComponent from "../../components/LoaderComponent";
-// import { useLoginUserQuery } from "../../redux/api/authApi";
 
+/** API call: with axios  **/
+// import { login } from "../../services/auth.service";
+
+/** API call: with RTK Query  **/
+import { useLoginMutation } from "../../redux/api/authApi";
 
 const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // const [ loginUser, { isError, error, isSuccess }] = useLoginUserQuery();
+    const [login] = useLoginMutation();
+    /** For API call: with RTK Query  **/
     const { accessToken } = useSelector(state => state.auth);
 
     const [isLoading, setIsLoading] = useState(false);
@@ -98,25 +102,28 @@ const Login = () => {
             event.preventDefault();
             const formData = formatSubmitData(formInput);
             setIsLoading(true);
-            // await loginUser(formData)
-            //     .unwrap()
-            //     .then(() => {
-            //         setIsLoading(false);
-            //     }).catch(error => {
-            //     setIsLoading(false);
-            //     const errorMessage = error?.response?.data?.error ?? LOGIN_ERROR_MESSAGE;
-            //     toast.error(<ToastComponent messages={errorMessage}/>);
-            // });
+            /** API call: RTK Query  */
             await login(formData)
+                .unwrap()
                 .then(response => {
                     setIsLoading(false);
-                    dispatch(handleLogin(response.data.data));
-                })
-                .catch(error => {
+                    dispatch(handleLogin(response.data));
+                }).catch(error => {
                     setIsLoading(false);
-                    const errorMessage = error?.response?.data?.error ?? LOGIN_ERROR_MESSAGE;
-                    toast.error(<ToastComponent messages={errorMessage}/>);
+                    toast.error(<ToastComponent messages={error?.data?.error ?? LOGIN_ERROR_MESSAGE}/>);
                 });
+
+            /** API call: axios*/
+            // await login(formData)
+            //     .then(response => {
+            //         setIsLoading(false);
+            //         dispatch(handleLogin(response.data.data));
+            //     })
+            //     .catch(error => {
+            //         setIsLoading(false);
+            //         const errorMessage = error?.response?.data?.error ?? LOGIN_ERROR_MESSAGE;
+            //         toast.error(<ToastComponent messages={errorMessage}/>);
+            //     });
         };
 
     return (
@@ -128,13 +135,13 @@ const Login = () => {
                             pauseOnFocusLoss
                             draggable/>
 
-            <LoaderComponent isLoading={isLoading} />
+            <LoaderComponent isLoading={isLoading}/>
 
             <Card className="w-50">
                 <Card.Body>
                     <Form className="text-left">
                         <Form.Group className="mb-3" controlId="formEmail">
-                            <Form.Label> { formInput.email.label } <span style={{ color: 'red' }}> * </span></Form.Label>
+                            <Form.Label> {formInput.email.label} <span style={{ color: 'red' }}> * </span></Form.Label>
                             <InputGroup hasValidation>
                                 <Form.Control type="email" placeholder="Enter Email"
                                               isInvalid={formInput.email.touched && !formInput.email.isValid}
@@ -151,7 +158,8 @@ const Login = () => {
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="formPassword">
-                            <Form.Label> { formInput.password.label } <span style={{ color: 'red' }}> * </span></Form.Label>
+                            <Form.Label> {formInput.password.label} <span
+                                style={{ color: 'red' }}> * </span></Form.Label>
                             <InputGroup hasValidation>
                                 <Form.Control type="password" placeholder="Password"
                                               isInvalid={formInput.password.touched && !formInput.password.isValid}
@@ -160,7 +168,7 @@ const Login = () => {
                                 />
 
                                 {
-                                    formInput.password.touched && !formInput.password.isValid  ?
+                                    formInput.password.touched && !formInput.password.isValid ?
                                         <Form.Control.Feedback type="invalid">
                                             {formInput.password.helperText}
                                         </Form.Control.Feedback> : <></>

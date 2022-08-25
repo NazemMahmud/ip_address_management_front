@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { appConfig } from "../../config/config";
-import { handleLogin, handleLogout } from "../authSlice";
+import { handleLogin, handleLogout } from "../states/authSlice";
 
 const baseUrl = appConfig.apiBaseUrl;
 /** **** Guest API Call Section ***********/

@@ -1,4 +1,4 @@
-import auth from './authSlice';
+import auth from './states/authSlice';
 import { authApi } from "./api/authApi";
 
 const rootReducer = {

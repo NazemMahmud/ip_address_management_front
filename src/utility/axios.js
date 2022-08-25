@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { appConfig } from "../config/config";
 import { store } from "../redux/store";
-import { handleLogin, handleLogout } from "../redux/authSlice";
+import { handleLogin, handleLogout } from "../redux/states/authSlice";
 
 const guestInstance = axios.create({
    baseURL: appConfig.apiBaseUrl,
