@@ -1,7 +1,7 @@
-import { guestApiSlice } from "./apiSlice";
+import { authApiSlice, guestApiSlice } from "./apiSlice";
 // import { handleLogin } from "../authSlice";
 
-export const authApi = guestApiSlice.injectEndpoints({
+export const guestAuthApi = guestApiSlice.injectEndpoints({
     endpoints: (builder) => ({
         register: builder.mutation({
             query(data) {
@@ -30,7 +30,21 @@ export const authApi = guestApiSlice.injectEndpoints({
     }),
 });
 
+export const authAuthApi = authApiSlice.injectEndpoints({
+    endpoints: (builder) => ({
+        logout: builder.mutation({
+            query(data) {
+                return {
+                    url: 'logout',
+                    method: 'POST'
+                };
+            },
+        }),
+    }),
+});
+
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {  useRegisterMutation, useLoginMutation } = authApi;
+export const {  useRegisterMutation, useLoginMutation } = guestAuthApi;
+export const {  useLogoutMutation } = authAuthApi;

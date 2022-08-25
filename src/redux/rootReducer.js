@@ -1,8 +1,9 @@
 import auth from './states/authSlice';
-import { authApi } from "./api/authApi";
+import { authAuthApi, guestAuthApi } from "./api/authApi";
 
 const rootReducer = {
-  [authApi.reducerPath]: authApi.reducer,
+  [guestAuthApi.reducerPath]: guestAuthApi.reducer,
+  [authAuthApi.reducerPath]: authAuthApi.reducer,
   auth,
 };
 
